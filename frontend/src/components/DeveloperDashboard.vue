@@ -15,6 +15,81 @@
         <p>Загрузка данных...</p>
       </div>
 
+      <!-- Рейтинг застройщика -->
+      <div v-if="developerRating" class="dashboard-section rating-section">
+        <h2>Рейтинг застройщика</h2>
+        <div class="rating-card">
+          <div class="rating-main">
+            <div class="rating-score">
+              <span class="rating-number">{{ developerRating.rating }}</span>
+              <span class="rating-max">/10</span>
+            </div>
+            <div class="rating-stars">
+              <span 
+                v-for="i in 10" 
+                :key="i" 
+                class="star"
+                :class="{ 'filled': i <= Math.round(developerRating.rating) }"
+              >
+                ★
+              </span>
+            </div>
+          </div>
+          <div class="rating-details">
+            <div class="rating-stat">
+              <span class="stat-label">Завершенных проектов:</span>
+              <span class="stat-value">{{ developerRating.completed_projects }}</span>
+            </div>
+            <div class="rating-stat">
+              <span class="stat-label">Лет на рынке:</span>
+              <span class="stat-value">{{ developerRating.years_on_market }}</span>
+            </div>
+            <div class="rating-stat">
+              <span class="stat-label">Последнее обновление:</span>
+              <span class="stat-value">{{ formatDate(developerRating.last_updated) }}</span>
+            </div>
+          </div>
+          <button class="recalculate-btn" @click="recalculateRating">
+            Пересчитать рейтинг
+          </button>
+        </div>
+      </div>
+
+      <!-- Статистика застройщика -->
+      <div v-if="developerStats" class="dashboard-section stats-section">
+        <h2>Статистика</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🏢</div>
+            <div class="stat-content">
+              <div class="stat-number">{{ developerStats.properties_count }}</div>
+              <div class="stat-label">Объектов недвижимости</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏘️</div>
+            <div class="stat-content">
+              <div class="stat-number">{{ developerStats.complexes_count }}</div>
+              <div class="stat-label">Жилых комплексов</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+              <div class="stat-number">{{ developerStats.avg_property_rating }}</div>
+              <div class="stat-label">Средний рейтинг квартир</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-content">
+              <div class="stat-number">{{ developerStats.avg_complex_rating }}</div>
+              <div class="stat-label">Средний рейтинг ЖК</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Аналитика -->
       <AnalyticsDashboard />
 
@@ -45,6 +120,26 @@
               <p class="complex-city">Город: {{ complex.city }}</p>
               <p class="complex-class">Класс: {{ complex.housingClass || 'Не указан' }}</p>
               <p class="complex-date">Ввод в эксплуатацию: {{ complex.commissioningDate || 'Не указана' }}</p>
+              
+              <!-- Рейтинг ЖК -->
+              <div v-if="complex.rating" class="complex-rating">
+                <div class="rating-display">
+                  <span class="rating-score">{{ complex.rating }}</span>
+                  <span class="rating-max">/5</span>
+                  <div class="rating-stars">
+                    <span 
+                      v-for="i in 5" 
+                      :key="i" 
+                      class="star"
+                      :class="{ 'filled': i <= Math.round(complex.rating) }"
+                    >
+                      ★
+                    </span>
+                  </div>
+                  <span class="rating-count">({{ complex.rating_count || 0 }} оценок)</span>
+                </div>
+              </div>
+              
               <div class="complex-stats">
                 <span>Квартир: {{ complex.apartmentsCount }}</span>
                 <span>Продано: {{ complex.soldCount }}</span>
@@ -200,13 +295,13 @@
           <input v-model="newComplex.commissioning_date" type="text" placeholder="Например: 2025" />
         </div>
         <div class="form-group">
-          <label>Класс ЖК:</label>
+          <label>Класс жилья:</label>
           <select v-model="newComplex.housing_class">
             <option value="">Выберите класс</option>
             <option value="Эконом">Эконом</option>
             <option value="Комфорт">Комфорт</option>
             <option value="Бизнес">Бизнес</option>
-            <option value="Элитный">Элитный</option>
+            <option value="Премиум">Премиум</option>
           </select>
         </div>
         <div class="form-group">
@@ -218,13 +313,9 @@
             <option value="Планируется">Планируется</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Ссылка на изображение (необязательно):</label>
-          <input v-model="newComplex.avatar_url" type="url" placeholder="https://example.com/image.jpg" />
-        </div>
         <div class="modal-actions">
-          <button class="btn-secondary" @click="closeAddComplexModal">Отмена</button>
-          <button class="btn-primary" @click="addComplex">Добавить ЖК</button>
+          <button class="btn secondary" @click="closeAddComplexModal">Отмена</button>
+          <button class="btn primary" @click="addComplex">Добавить</button>
         </div>
       </div>
     </div>

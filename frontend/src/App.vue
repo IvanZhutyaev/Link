@@ -6,6 +6,7 @@ import HeroGallery from './components/HeroGallery.vue'
 import ComplexSearch from './components/ComplexSearch.vue'
 import UserDashboard from './components/UserDashboard.vue'
 import DeveloperDashboard from './components/DeveloperDashboard.vue'
+import TopDevelopers from './components/TopDevelopers.vue'
 import MapYandex from './components/MapYandex.vue'
 import ChatAssistant from './components/ChatAssistant.vue'
 
@@ -117,6 +118,7 @@ const handleComplexSelected = (complex) => {
         @search-complexes="showComplexSearch"
       />
       <HeroGallery />
+      <TopDevelopers />
       <MapYandex />
     </div>
 

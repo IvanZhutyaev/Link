@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from Routers import Zastroy_router, User_router, Property_router, Analytics_router, Chat_router
+from Routers import Zastroy_router, User_router, Property_router, Analytics_router, Chat_router, DeveloperRating_router
 from Database.DB_connection import create_tables
 
 app = FastAPI()
@@ -27,6 +27,7 @@ app.include_router(User_router.router)
 app.include_router(Property_router.router)
 app.include_router(Analytics_router.router)
 app.include_router(Chat_router.router)
+app.include_router(DeveloperRating_router.router)
 
 
 @app.get("/items/")

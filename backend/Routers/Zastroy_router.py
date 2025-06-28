@@ -5,9 +5,11 @@ from typing import List, Optional
 
 from Cruds.RC_crud import create_residential_complex, get_residential_complexes_by_developer, get_all_residential_complexes, get_residential_complexes_by_zastroy_id, get_residential_complex, rate_residential_complex
 from Cruds.Property_crud import get_properties_by_complex, rate_property, mark_property_error
+from Cruds.DeveloperRating_crud import get_developer_rating, get_developer_stats, calculate_developer_rating, update_developer_rating
 from Schemas.RC_schema import ResidentialComplexCreate, ResidentialComplexResponse, RatingModel
 from Schemas.Property_schema import PropertyResponse
-from Schemas.Zastroy_schema import ZastroyModel, ZastroyResponse, ZastroyLogin
+from Schemas.Zastroy_schema import ZastroyModel, ZastroyResponse, ZastroyLogin, ZastroyWithStatsResponse
+from Schemas.DeveloperRating_schema import DeveloperRatingResponse, DeveloperStatsResponse
 from Cruds.Law_crud import (
     create_zastroy,
     get_zastroy,
@@ -48,6 +50,34 @@ def read_zastroy(zastroy_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Застройщик не найден")
     return db_zastroy
 
+@router.get("/{zastroy_id}/with-stats", response_model=ZastroyWithStatsResponse)
+def read_zastroy_with_stats(zastroy_id: int, db: Session = Depends(get_db)):
+    """Получить застройщика с рейтингом и статистикой"""
+    db_zastroy = get_zastroy(db, zastroy_id)
+    if not db_zastroy:
+        raise HTTPException(status_code=404, detail="Застройщик не найден")
+    
+    # Получаем рейтинг
+    rating = get_developer_rating(db, zastroy_id)
+    
+    # Получаем статистику
+    stats = get_developer_stats(db, zastroy_id)
+    
+    # Формируем ответ
+    response_data = {
+        "id": db_zastroy.id,
+        "Company_name": db_zastroy.Company_name,
+        "INN": db_zastroy.INN,
+        "OGRN": db_zastroy.OGRN,
+        "Adress": db_zastroy.Adress,
+        "User_name": db_zastroy.User_name,
+        "password": db_zastroy.password,
+        "rating": rating,
+        "stats": stats
+    }
+    
+    return response_data
+
 @router.put("/{zastroy_id}", response_model=ZastroyResponse)
 def update_existing_zastroy(zastroy_id: int, zastroy: ZastroyModel, db: Session = Depends(get_db)):
     try:
@@ -62,6 +92,33 @@ def remove_zastroy(zastroy_id: int, db: Session = Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
+# Новые эндпоинты для рейтинга застройщиков
+@router.get("/{zastroy_id}/rating", response_model=DeveloperRatingResponse)
+def get_zastroy_rating(zastroy_id: int, db: Session = Depends(get_db)):
+    """Получить рейтинг застройщика"""
+    rating = get_developer_rating(db, zastroy_id)
+    if not rating:
+        raise HTTPException(status_code=404, detail="Рейтинг застройщика не найден")
+    return rating
+
+@router.get("/{zastroy_id}/stats", response_model=DeveloperStatsResponse)
+def get_zastroy_stats(zastroy_id: int, db: Session = Depends(get_db)):
+    """Получить статистику застройщика"""
+    try:
+        stats = get_developer_stats(db, zastroy_id)
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/{zastroy_id}/recalculate-rating")
+def recalculate_zastroy_rating(zastroy_id: int, db: Session = Depends(get_db)):
+    """Пересчитать рейтинг застройщика"""
+    try:
+        new_rating = calculate_developer_rating(db, zastroy_id)
+        update_developer_rating(db, zastroy_id, rating=new_rating)
+        return {"message": "Рейтинг пересчитан", "new_rating": new_rating}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/residential-complexes/", response_model=ResidentialComplexResponse)
 def add_residential_complex(

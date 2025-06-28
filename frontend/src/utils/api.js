@@ -71,6 +71,21 @@ export const developerAPI = {
   // Получить застройщика по ID
   getDeveloper: (developerId) => apiRequest(`/zastroys/${developerId}`),
   
+  // Получить застройщика с рейтингом и статистикой
+  getDeveloperWithStats: (developerId) => apiRequest(`/zastroys/${developerId}/with-stats`),
+  
+  // Получить рейтинг застройщика
+  getDeveloperRating: (developerId) => apiRequest(`/zastroys/${developerId}/rating`),
+  
+  // Получить статистику застройщика
+  getDeveloperStats: (developerId) => apiRequest(`/zastroys/${developerId}/stats`),
+  
+  // Пересчитать рейтинг застройщика
+  recalculateRating: (developerId) => 
+    apiRequest(`/zastroys/${developerId}/recalculate-rating`, {
+      method: 'POST'
+    }),
+  
   // Получить все ЖК застройщика (из таблицы Properties)
   getDeveloperProperties: (developerId) => apiRequest(`/properties/?zastroy_id=${developerId}`),
   
@@ -115,6 +130,38 @@ export const developerAPI = {
     apiRequest(`/properties/${propertyId}`, {
       method: 'DELETE'
     })
+}
+
+// API для рейтинга застройщиков
+export const developerRatingAPI = {
+  // Получить рейтинг застройщика
+  getRating: (lawFaceId) => apiRequest(`/developer-ratings/${lawFaceId}`),
+  
+  // Создать рейтинг застройщика
+  createRating: (ratingData) => 
+    apiRequest('/developer-ratings/', {
+      method: 'POST',
+      body: JSON.stringify(ratingData)
+    }),
+  
+  // Обновить рейтинг застройщика
+  updateRating: (lawFaceId, ratingData) => 
+    apiRequest(`/developer-ratings/${lawFaceId}`, {
+      method: 'PUT',
+      body: JSON.stringify(ratingData)
+    }),
+  
+  // Пересчитать рейтинг застройщика
+  recalculateRating: (lawFaceId) => 
+    apiRequest(`/developer-ratings/${lawFaceId}/calculate`, {
+      method: 'POST'
+    }),
+  
+  // Получить статистику застройщика
+  getStats: (lawFaceId) => apiRequest(`/developer-ratings/${lawFaceId}/stats`),
+  
+  // Получить топ застройщиков
+  getTopDevelopers: (limit = 10) => apiRequest(`/developer-ratings/top/?limit=${limit}`)
 }
 
 // API для ЖК
@@ -270,5 +317,6 @@ export const api = {
   ...developerAPI,
   ...complexAPI,
   ...propertyAPI,
-  ...analyticsAPI
+  ...analyticsAPI,
+  ...developerRatingAPI
 } 

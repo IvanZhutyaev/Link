@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, BOOLEAN, false, DateTime, Float, BigInteger, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
+import random
 
 from Database.DB_connection import base, engine
 
@@ -19,6 +20,41 @@ class Law_Face(base):
     # Связи
     properties = relationship("Property", back_populates="zastroy")
     residential_complexes = relationship("ResidentialComplex", back_populates="zastroy")
+    rating = relationship("DeveloperRating", back_populates="law_face", uselist=False, cascade="all, delete-orphan")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Автоматическое создание рейтинга при инициализации
+        self.create_developer_rating()
+
+    def create_developer_rating(self):
+        """Автоматически создает рейтинг для застройщика"""
+        if not self.rating:
+            rating_data = self.calculate_initial_rating()
+            self.rating = DeveloperRating(
+                law_face_id=self.id,
+                rating=rating_data["rating"],
+                completed_projects=rating_data["completed_projects"],
+                years_on_market=rating_data["years_on_market"]
+            )
+
+    def calculate_initial_rating(self):
+        """Генерация тестовых данных и расчет рейтинга"""
+        random.seed(self.INN)  # Для детерминированных результатов
+
+        completed_projects = (self.INN % 20) + random.randint(1, 10)
+        years_on_market = (self.INN % 25) + 5
+
+        rating = min(
+            8.0 + (completed_projects * 0.3) + (years_on_market * 0.2),
+            10.0
+        )
+
+        return {
+            "rating": round(rating, 1),
+            "completed_projects": completed_projects,
+            "years_on_market": years_on_market
+        }
 
 
 class User(base):
@@ -150,6 +186,19 @@ class ApartmentEvent(base):
     
     # Связь с объектом недвижимости
     property = relationship("Property", back_populates="events")
+
+
+class DeveloperRating(base):
+    __tablename__ = "developer_ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    law_face_id = Column(Integer, ForeignKey("Law_faces.id"), unique=True)
+    rating = Column(Float, default=0.0)  # 0-10 (рассчитывается)
+    completed_projects = Column(Integer, default=0)  # Сданные объекты (из API ФНС)
+    years_on_market = Column(Integer, default=0)  # Стаж компании (лет)
+    last_updated = Column(DateTime, default=datetime.utcnow)
+
+    law_face = relationship("Law_Face", back_populates="rating")
 
 
 base.metadata.create_all(engine)
