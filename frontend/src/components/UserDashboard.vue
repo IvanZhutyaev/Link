@@ -379,7 +379,8 @@ const loadUserData = async () => {
       name: booking.property.name,
       address: booking.property.address,
       price: booking.property.price.toLocaleString(),
-      image: booking.property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Недвижимость'
+      image: booking.property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Квартира',
+      booking_id: booking.id
     }))
     
     // Загружаем купленные объекты
@@ -389,7 +390,7 @@ const loadUserData = async () => {
       name: purchase.property.name,
       address: purchase.property.address,
       price: purchase.purchase_price.toLocaleString(),
-      image: purchase.property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Недвижимость',
+      image: purchase.property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Квартира',
       payment_method: getPaymentMethodText(purchase.payment_method)
     }))
     
@@ -399,7 +400,7 @@ const loadUserData = async () => {
       ...mortgage,
       property: {
         ...mortgage.property,
-        image: mortgage.property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Недвижимость'
+        image: mortgage.property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Квартира'
       }
     }))
     
@@ -465,13 +466,7 @@ const searchProperties = async () => {
     // Отслеживаем поиск
     analytics.trackSearch(searchFilters)
     
-    // Добавляем фильтр для поиска только квартир (объектов с complex_id)
-    const searchParams = {
-      ...searchFilters,
-      complex_id: 'any' // Это будет означать, что мы ищем только объекты с complex_id
-    }
-    
-    const results = await propertyAPI.searchProperties(searchParams)
+    const results = await propertyAPI.searchProperties(searchFilters)
     searchResults.value = results.map(property => ({
       id: property.id,
       name: property.name,
@@ -480,7 +475,7 @@ const searchProperties = async () => {
       image: property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Квартира'
     }))
   } catch (error) {
-    console.error('Ошибка поиска недвижимости:', error)
+    console.error('Ошибка поиска квартир:', error)
   }
 }
 

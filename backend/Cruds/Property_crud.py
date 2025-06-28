@@ -42,10 +42,17 @@ def create_property(db: Session, property_data: PropertyModel) -> Property:
 
 def get_properties(db: Session, skip: int = 0, limit: int = 100, zastroy_id: int = None, complex_id: int = None) -> List[Property]:
     query = db.query(Property)
+    
+    # По умолчанию показываем только квартиры (объекты с complex_id)
+    # Если complex_id не указан, показываем все квартиры
+    if complex_id is None:
+        query = query.filter(Property.complex_id.isnot(None))
+    else:
+        query = query.filter(Property.complex_id == complex_id)
+    
     if zastroy_id is not None:
         query = query.filter(Property.zastroy_id == zastroy_id)
-    if complex_id is not None:
-        query = query.filter(Property.complex_id == complex_id)
+    
     return query.offset(skip).limit(limit).all()
 
 
@@ -66,6 +73,14 @@ def get_property(db: Session, property_id: int) -> Optional[Property]:
 
 def search_properties(db: Session, search_params: PropertySearch) -> List[Property]:
     query = db.query(Property)
+    
+    # По умолчанию показываем только квартиры (объекты с complex_id)
+    # Если complex_id не указан или равен 'any', показываем все квартиры
+    if search_params.complex_id is None or search_params.complex_id == 'any':
+        query = query.filter(Property.complex_id.isnot(None))
+    elif search_params.complex_id:
+        # Ищем квартиры в конкретном ЖК
+        query = query.filter(Property.complex_id == search_params.complex_id)
     
     # Фильтр по городу
     if search_params.city:
@@ -90,15 +105,6 @@ def search_properties(db: Session, search_params: PropertySearch) -> List[Proper
     # Фильтр по доступности
     if search_params.is_available is not None:
         query = query.filter(Property.is_available == search_params.is_available)
-    
-    # Фильтр по ЖК (complex_id)
-    if search_params.complex_id is not None:
-        if search_params.complex_id == 'any':
-            # Ищем только квартиры (объекты с complex_id)
-            query = query.filter(Property.complex_id.isnot(None))
-        else:
-            # Ищем квартиры в конкретном ЖК
-            query = query.filter(Property.complex_id == search_params.complex_id)
     
     return query.all()
 
