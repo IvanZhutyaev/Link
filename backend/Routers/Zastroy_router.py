@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 from starlette import status
 from typing import List, Optional
 
-from ..Cruds.RC_crud import create_residential_complex, get_residential_complexes_by_developer, get_all_residential_complexes, get_residential_complexes_by_zastroy_id, get_residential_complex, rate_residential_complex
-from ..Cruds.Property_crud import get_properties_by_complex, rate_property, mark_property_error
-from ..Schemas.RC_schema import ResidentialComplexCreate, ResidentialComplexResponse, RatingModel
-from ..Schemas.Property_schema import PropertyResponse
-from ..Schemas.Zastroy_schema import ZastroyModel, ZastroyResponse, ZastroyLogin
-from ..Cruds.Law_crud import (
+from Cruds.RC_crud import create_residential_complex, get_residential_complexes_by_developer, get_all_residential_complexes, get_residential_complexes_by_zastroy_id, get_residential_complex, rate_residential_complex
+from Cruds.Property_crud import get_properties_by_complex, rate_property, mark_property_error
+from Schemas.RC_schema import ResidentialComplexCreate, ResidentialComplexResponse, RatingModel
+from Schemas.Property_schema import PropertyResponse
+from Schemas.Zastroy_schema import ZastroyModel, ZastroyResponse, ZastroyLogin
+from Cruds.Law_crud import (
     create_zastroy,
     get_zastroy,
     get_zastroys,
@@ -16,7 +16,7 @@ from ..Cruds.Law_crud import (
     delete_zastroy, 
     check_zastroy_credentials
 )
-from ..Database.DB_connection import get_db
+from Database.DB_connection import get_db
 
 router = APIRouter(prefix="/zastroys", tags=["Застройщики"])
 

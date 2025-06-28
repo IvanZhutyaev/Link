@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from ..Database.DB_connection import get_db
-from ..Cruds.Analytics_crud import AnalyticsCRUD
-from ..Cruds.Property_crud import get_properties
-from ..Schemas.Analytics_schema import EventCreate, EventResponse, AnalyticsSummary
+from Database.DB_connection import get_db
+from Cruds.Analytics_crud import AnalyticsCRUD
+from Cruds.Property_crud import get_properties
+from Schemas.Analytics_schema import EventCreate, EventResponse, AnalyticsSummary
 from typing import List, Optional
 
 router = APIRouter(prefix="/api", tags=["analytics"])

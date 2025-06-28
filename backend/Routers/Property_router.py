@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from ..Schemas.Property_schema import (
+from Schemas.Property_schema import (
     PropertyModel, 
     PropertyResponse, 
     PropertySearch, 
@@ -16,7 +16,7 @@ from ..Schemas.Property_schema import (
     MortgageCalculationResponse,
     RatingModel
 )
-from ..Cruds.Property_crud import (
+from Cruds.Property_crud import (
     create_property,
     get_properties,
     get_property,
@@ -36,8 +36,8 @@ from ..Cruds.Property_crud import (
     rate_property,
     mark_property_error
 )
-from ..Database.DB_connection import get_db
-from ..Models.All_models import Property
+from Database.DB_connection import get_db
+from Models.All_models import Property
 
 router = APIRouter(prefix="/properties", tags=["Недвижимость"])
 

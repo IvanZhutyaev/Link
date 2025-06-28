@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, BOOLEAN, false, Date
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from backend.Database.DB_connection import base, engine
+from Database.DB_connection import base, engine
 
 
 class Law_Face(base):
