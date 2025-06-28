@@ -84,13 +84,14 @@ class Property(base):
     is_available = Column(BOOLEAN, nullable=False, default=True)
     zastroy_id = Column(Integer, ForeignKey("Law_faces.id"), nullable=False)
     complex_id = Column(Integer, ForeignKey("residential_complexes.id"), nullable=True)  # ЖК
-    area = Column(Integer, nullable=True)  # Площадь в м²
+    area = Column(Float, nullable=True)  # Площадь в м² (может быть дробной)
     rooms = Column(Integer, nullable=True)  # Количество комнат
     floor = Column(Integer, nullable=True)  # Этаж
     owner_id = Column(Integer, ForeignKey("Users.id"), nullable=True)  # Владелец квартиры
     rating = Column(Float, nullable=True, default=0.0)  # Рейтинг квартиры
     rating_count = Column(Integer, nullable=True, default=0)  # Количество оценок
     has_error = Column(BOOLEAN, nullable=False, default=False)  # Флаг ошибки
+    status = Column(String, nullable=False, default="available")  # Статус квартиры (available, sold, reserved)
     
     # Связи
     zastroy = relationship("Law_Face", back_populates="properties")

@@ -365,6 +365,14 @@
           <label>Изображение:</label>
           <input v-model="newApartment.image_url" type="url" placeholder="URL изображения" />
         </div>
+        <div class="form-group">
+          <label>Статус:</label>
+          <select v-model="newApartment.status">
+            <option value="available">Доступна</option>
+            <option value="reserved">Забронирована</option>
+            <option value="sold">Продана</option>
+          </select>
+        </div>
         <div class="modal-actions">
           <button class="btn-secondary" @click="closeAddApartmentModal">Отмена</button>
           <button class="btn-primary" @click="addApartmentToComplex">Добавить квартиру</button>
@@ -434,7 +442,8 @@ const newApartment = reactive({
   price: '',
   description: '',
   city: '',
-  image_url: ''
+  image_url: '',
+  status: 'available'
 })
 
 // Переменная для хранения ID выбранного ЖК
@@ -619,6 +628,8 @@ const closeAddComplexModal = () => {
 const closeAddApartmentModal = () => {
   showAddApartmentModal.value = false
   Object.keys(newApartment).forEach(key => newApartment[key] = '')
+  newApartment.rooms = '1' // Возвращаем значение по умолчанию
+  newApartment.status = 'available' // Возвращаем значение по умолчанию
 }
 
 const addComplex = async () => {
@@ -637,14 +648,53 @@ const addComplex = async () => {
 
 const addApartmentToComplex = async () => {
   try {
-    await developerAPI.createApartment({
+    // Валидация обязательных полей
+    if (!newApartment.name || !newApartment.name.trim()) {
+      alert('Пожалуйста, введите название квартиры')
+      return
+    }
+    
+    if (!newApartment.address || !newApartment.address.trim()) {
+      alert('Пожалуйста, введите адрес квартиры')
+      return
+    }
+    
+    if (!newApartment.price || newApartment.price <= 0) {
+      alert('Пожалуйста, введите корректную цену квартиры')
+      return
+    }
+    
+    if (!newApartment.city || !newApartment.city.trim()) {
+      alert('Пожалуйста, введите город')
+      return
+    }
+    
+    // Преобразуем строковые значения в числа для числовых полей
+    const apartmentData = {
       ...newApartment,
       complex_id: selectedComplexId.value,
-      zastroy_id: developerInfo.value.id
-    })
+      zastroy_id: developerInfo.value.id,
+      area: newApartment.area ? parseFloat(newApartment.area) : null,
+      rooms: newApartment.rooms ? parseInt(newApartment.rooms) : null,
+      floor: newApartment.floor ? parseInt(newApartment.floor) : null,
+      price: newApartment.price ? parseInt(newApartment.price) : 0,
+      status: newApartment.status
+    }
+    
+    console.log('Отправляем данные квартиры:', apartmentData)
+    
+    await developerAPI.createApartment(apartmentData)
     await loadDeveloperData()
     showAddApartmentModal.value = false
+    
+    // Очищаем форму
+    Object.keys(newApartment).forEach(key => newApartment[key] = '')
+    newApartment.rooms = '1' // Возвращаем значение по умолчанию
+    newApartment.status = 'available' // Возвращаем значение по умолчанию
+    
+    alert('Квартира успешно добавлена!')
   } catch (e) {
+    console.error('Ошибка при добавлении квартиры:', e)
     alert('Ошибка при добавлении квартиры: ' + (e.message || 'Неизвестная ошибка'))
   }
 }

@@ -11,17 +11,33 @@ import math
 
 
 def create_property(db: Session, property_data: PropertyModel) -> Property:
-    data = property_data.dict()
-    # Если complex_id или zastroy_id есть в data, добавляем их явно
-    if 'complex_id' in data:
-        data['complex_id'] = data['complex_id']
-    if 'zastroy_id' in data:
-        data['zastroy_id'] = data['zastroy_id']
-    db_property = Property(**data)
-    db.add(db_property)
-    db.commit()
-    db.refresh(db_property)
-    return db_property
+    try:
+        print(f"Создание недвижимости с данными: {property_data.dict()}")
+        
+        data = property_data.dict()
+        # Если complex_id или zastroy_id есть в data, добавляем их явно
+        if 'complex_id' in data:
+            data['complex_id'] = data['complex_id']
+        if 'zastroy_id' in data:
+            data['zastroy_id'] = data['zastroy_id']
+        
+        print(f"Подготовленные данные для создания: {data}")
+        
+        db_property = Property(**data)
+        db.add(db_property)
+        db.commit()
+        db.refresh(db_property)
+        
+        print(f"Недвижимость успешно создана с ID: {db_property.id}")
+        return db_property
+        
+    except Exception as e:
+        print(f"Ошибка при создании недвижимости: {e}")
+        print(f"Тип ошибки: {type(e)}")
+        import traceback
+        print(f"Стек ошибки: {traceback.format_exc()}")
+        db.rollback()
+        raise ValueError(f"Ошибка при создании недвижимости: {str(e)}")
 
 
 def get_properties(db: Session, skip: int = 0, limit: int = 100, zastroy_id: int = None, complex_id: int = None) -> List[Property]:

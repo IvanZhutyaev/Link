@@ -13,14 +13,15 @@ class PropertyModel(BaseModel):
     is_available: bool = True
     zastroy_id: int
     complex_id: Optional[int] = None
-    area: Optional[int] = None  # Площадь в м²
+    area: Optional[float] = None  # Площадь в м² (может быть дробной)
     rooms: Optional[int] = None  # Количество комнат
     floor: Optional[int] = None  # Этаж
+    status: Optional[str] = "available"  # Статус квартиры
 
 
 class PropertyResponse(PropertyModel):
     id: int
-    area: Optional[int] = None
+    area: Optional[float] = None
     rooms: Optional[int] = None
     floor: Optional[int] = None
     owner_id: Optional[int] = None
