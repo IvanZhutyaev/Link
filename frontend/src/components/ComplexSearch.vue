@@ -15,6 +15,7 @@
           <option value="комфорт">Комфорт</option>
           <option value="бизнес">Бизнес</option>
           <option value="премиум">Премиум</option>
+          <option value="элит">Элит</option>
         </select>
         <button @click="searchComplexes" class="search-btn">Поиск</button>
       </div>
@@ -29,7 +30,7 @@
       <p>Жилые комплексы не найдены</p>
     </div>
 
-    <div v-else class="complexes-grid">
+    <div v-else class="complexes-list">
       <div 
         v-for="complex in complexes" 
         :key="complex.id"
@@ -38,103 +39,35 @@
       >
         <div class="complex-image">
           <img :src="complex.avatar_url || '/default-complex.jpg'" :alt="complex.name" />
-          <div class="complex-status" :class="complex.status">
-            {{ getStatusText(complex.status) }}
-          </div>
         </div>
         <div class="complex-info">
-          <h3>{{ complex.name }}</h3>
-          <p class="complex-address">{{ complex.address }}</p>
-          <p class="complex-city">{{ complex.city }}</p>
-          <p class="complex-class">Класс: {{ complex.housing_class || 'Не указан' }}</p>
-          <p class="complex-date">Ввод в эксплуатацию: {{ complex.commissioning_date || 'Не указана' }}</p>
+          <h3 class="complex-name">{{ complex.name }}</h3>
+          <p class="developer-name">{{ complex.developer_name }}</p>
           
-          <!-- Рейтинг -->
-          <div class="complex-rating" v-if="complex.rating">
+          <!-- Рейтинг застройщика -->
+          <div class="developer-rating" v-if="complex.developer_rating">
             <div class="stars">
               <span 
                 v-for="i in 5" 
                 :key="i" 
                 class="star"
-                :class="{ filled: i <= complex.rating }"
+                :class="{ filled: i <= Math.round(complex.developer_rating) }"
               >
                 ★
               </span>
             </div>
-            <span class="rating-text">{{ complex.rating.toFixed(1) }} ({{ complex.rating_count }} оценок)</span>
+            <span class="rating-text">{{ complex.developer_rating.toFixed(1) }}</span>
           </div>
           
-          <div class="complex-actions">
-            <button class="action-btn primary" @click.stop="viewComplex(complex.id)">
-              Просмотр
-            </button>
-            <button class="action-btn secondary" @click.stop="viewApartments(complex.id)">
-              Квартиры
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Модальное окно с квартирами ЖК -->
-    <div v-if="showApartmentsModal" class="modal-overlay" @click="closeApartmentsModal">
-      <div class="modal-content apartments-modal" @click.stop>
-        <div class="modal-header">
-          <h3>Квартиры в ЖК "{{ selectedComplex?.name }}"</h3>
-          <button class="close-btn" @click="closeApartmentsModal">×</button>
+          <p class="commissioning-date">Срок эксплуатации: {{ complex.commissioning_date || 'Не указан' }}</p>
+          <p class="complex-address">{{ complex.address }}</p>
         </div>
         
-        <div v-if="apartmentsLoading" class="loading">
-          <div class="spinner"></div>
-          <p>Загрузка квартир...</p>
-        </div>
-        
-        <div v-else-if="apartments.length === 0" class="no-results">
-          <p>Квартиры в этом ЖК не найдены</p>
-        </div>
-        
-        <div v-else class="apartments-list">
-          <div 
-            v-for="apartment in apartments" 
-            :key="apartment.id"
-            class="apartment-item"
-          >
-            <div class="apartment-image">
-              <img :src="apartment.image_url || '/default-apartment.jpg'" :alt="apartment.name" />
-            </div>
-            <div class="apartment-info">
-              <h4>{{ apartment.name }}</h4>
-              <p class="apartment-address">{{ apartment.address }}</p>
-              <p class="apartment-price">{{ formatPrice(apartment.price) }} ₽</p>
-              <p class="apartment-details">
-                {{ apartment.area }} м² • {{ apartment.rooms }} комн. • {{ apartment.floor }} этаж
-              </p>
-              
-              <!-- Рейтинг квартиры -->
-              <div class="apartment-rating" v-if="apartment.rating">
-                <div class="stars">
-                  <span 
-                    v-for="i in 5" 
-                    :key="i" 
-                    class="star"
-                    :class="{ filled: i <= apartment.rating }"
-                  >
-                    ★
-                  </span>
-                </div>
-                <span class="rating-text">{{ apartment.rating.toFixed(1) }}</span>
-              </div>
-              
-              <div class="apartment-actions">
-                <button class="action-btn primary" @click="bookApartment(apartment.id)">
-                  Забронировать
-                </button>
-                <button class="action-btn secondary" @click="viewApartment(apartment.id)">
-                  Подробнее
-                </button>
-              </div>
-            </div>
-          </div>
+        <!-- Тип ЖК справа снизу -->
+        <div class="complex-type">
+          <span class="type-badge" :class="getTypeClass(complex.housing_class)">
+            {{ getTypeText(complex.housing_class) }}
+          </span>
         </div>
       </div>
     </div>
@@ -149,11 +82,7 @@ export default {
   data() {
     return {
       complexes: [],
-      apartments: [],
       loading: false,
-      apartmentsLoading: false,
-      showApartmentsModal: false,
-      selectedComplex: null,
       searchFilters: {
         city: '',
         housing_class: ''
@@ -172,7 +101,28 @@ export default {
         if (this.searchFilters.housing_class) params.append('housing_class', this.searchFilters.housing_class)
         
         const response = await api.get(`/zastroys/residential-complexes/?${params}`)
-        this.complexes = response.data
+        const complexes = response.data
+        
+        // Получаем рейтинги застройщиков для каждого ЖК
+        const complexesWithRatings = await Promise.all(
+          complexes.map(async (complex) => {
+            try {
+              const ratingResponse = await api.get(`/developer-ratings/${complex.zastroy_id}`)
+              return {
+                ...complex,
+                developer_rating: ratingResponse.rating
+              }
+            } catch (error) {
+              console.error(`Ошибка при получении рейтинга застройщика ${complex.zastroy_id}:`, error)
+              return {
+                ...complex,
+                developer_rating: null
+              }
+            }
+          })
+        )
+        
+        this.complexes = complexesWithRatings
       } catch (error) {
         console.error('Ошибка при поиске ЖК:', error)
         this.complexes = []
@@ -181,66 +131,30 @@ export default {
       }
     },
     
-    async viewApartments(complexId) {
-      this.apartmentsLoading = true
-      this.showApartmentsModal = true
-      this.selectedComplex = this.complexes.find(c => c.id === complexId)
-      
-      try {
-        const response = await api.get(`/zastroys/residential-complexes/${complexId}/apartments`)
-        this.apartments = response.data
-      } catch (error) {
-        console.error('Ошибка при загрузке квартир:', error)
-        this.apartments = []
-      } finally {
-        this.apartmentsLoading = false
-      }
-    },
-    
-    closeApartmentsModal() {
-      this.showApartmentsModal = false
-      this.selectedComplex = null
-      this.apartments = []
-    },
-    
     selectComplex(complex) {
       this.$emit('complex-selected', complex)
     },
     
-    viewComplex(complexId) {
-      this.$router.push(`/complex/${complexId}`)
-    },
-    
-    async bookApartment(apartmentId) {
-      try {
-        const userId = 1 // В реальном приложении брать из авторизации
-        await api.post('/properties/book', {
-          property_id: apartmentId
-        }, {
-          params: { user_id: userId }
-        })
-        alert('Квартира забронирована!')
-        // Обновляем список квартир
-        if (this.selectedComplex) {
-          this.viewApartments(this.selectedComplex.id)
-        }
-      } catch (error) {
-        console.error('Ошибка при бронировании квартиры:', error)
-        alert('Ошибка при бронировании квартиры')
+    getTypeClass(housingClass) {
+      const classMap = {
+        'эконом': 'economy',
+        'комфорт': 'comfort',
+        'бизнес': 'business',
+        'премиум': 'premium',
+        'элит': 'elite'
       }
+      return classMap[housingClass?.toLowerCase()] || 'default'
     },
     
-    viewApartment(apartmentId) {
-      this.$router.push(`/apartment/${apartmentId}`)
-    },
-    
-    getStatusText(status) {
-      const statusMap = {
-        'строится': 'Строится',
-        'сдан': 'Сдан',
-        'планируется': 'Планируется'
+    getTypeText(housingClass) {
+      const textMap = {
+        'эконом': 'Эконом',
+        'комфорт': 'Комфорт',
+        'бизнес': 'Бизнес',
+        'премиум': 'Премиум',
+        'элит': 'Элит'
       }
-      return statusMap[status] || status
+      return textMap[housingClass?.toLowerCase()] || 'Не указан'
     },
     
     formatPrice(price) {
@@ -253,6 +167,8 @@ export default {
 <style scoped>
 .complex-search {
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .search-header {
@@ -262,6 +178,7 @@ export default {
 .search-header h2 {
   margin-bottom: 20px;
   color: #333;
+  font-size: 28px;
 }
 
 .search-filters {
@@ -273,49 +190,56 @@ export default {
 
 .filter-input,
 .filter-select {
-  padding: 10px 15px;
+  padding: 12px 15px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 14px;
+  min-width: 150px;
 }
 
 .search-btn {
-  padding: 10px 20px;
+  padding: 12px 24px;
   background: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
 }
 
 .search-btn:hover {
   background: #0056b3;
 }
 
-.complexes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+.complexes-list {
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
 .complex-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
+  display: flex;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  background: white;
+  position: relative;
 }
 
 .complex-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
 .complex-image {
-  position: relative;
-  height: 200px;
+  width: 200px;
+  height: 150px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .complex-image img {
@@ -324,52 +248,33 @@ export default {
   object-fit: cover;
 }
 
-.complex-status {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: bold;
-  color: white;
-}
-
-.complex-status.строится {
-  background: #ffc107;
-}
-
-.complex-status.сдан {
-  background: #28a745;
-}
-
-.complex-status.планируется {
-  background: #17a2b8;
-}
-
 .complex-info {
+  flex: 1;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.complex-info h3 {
-  margin: 0 0 10px 0;
+.complex-name {
+  margin: 0;
   color: #333;
+  font-size: 20px;
+  font-weight: 600;
 }
 
-.complex-address,
-.complex-city,
-.complex-class,
-.complex-date {
-  margin: 5px 0;
+.developer-name {
+  margin: 0;
   color: #666;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 500;
 }
 
-.complex-rating {
-  margin: 15px 0;
+.developer-rating {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  margin: 4px 0;
 }
 
 .stars {
@@ -387,41 +292,62 @@ export default {
 }
 
 .rating-text {
-  font-size: 12px;
-  color: #666;
-}
-
-.complex-actions {
-  margin-top: 15px;
-  display: flex;
-  gap: 10px;
-}
-
-.action-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
   font-size: 14px;
-  transition: background 0.2s;
+  color: #666;
+  font-weight: 500;
 }
 
-.action-btn.primary {
-  background: #007bff;
+.commissioning-date {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.complex-address {
+  margin: 0;
+  color: #888;
+  font-size: 14px;
+}
+
+.complex-type {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
+.type-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
   color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.action-btn.primary:hover {
-  background: #0056b3;
+.type-badge.economy {
+  background: #28a745;
 }
 
-.action-btn.secondary {
+.type-badge.comfort {
+  background: #17a2b8;
+}
+
+.type-badge.business {
+  background: #ffc107;
+  color: #333;
+}
+
+.type-badge.premium {
+  background: #fd7e14;
+}
+
+.type-badge.elite {
+  background: #dc3545;
+}
+
+.type-badge.default {
   background: #6c757d;
-  color: white;
-}
-
-.action-btn.secondary:hover {
-  background: #545b62;
 }
 
 .loading {
@@ -448,118 +374,34 @@ export default {
   text-align: center;
   padding: 40px;
   color: #666;
+  font-size: 18px;
 }
 
-/* Модальное окно */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 10px;
-  max-width: 90%;
-  max-height: 90%;
-  overflow: auto;
-}
-
-.apartments-modal {
-  width: 800px;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #ddd;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #666;
-}
-
-.close-btn:hover {
-  color: #333;
-}
-
-.apartments-list {
-  padding: 20px;
-}
-
-.apartment-item {
-  display: flex;
-  gap: 15px;
-  padding: 15px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  margin-bottom: 15px;
-}
-
-.apartment-image {
-  width: 120px;
-  height: 90px;
-  overflow: hidden;
-  border-radius: 5px;
-}
-
-.apartment-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.apartment-info {
-  flex: 1;
-}
-
-.apartment-info h4 {
-  margin: 0 0 8px 0;
-  color: #333;
-}
-
-.apartment-address,
-.apartment-price,
-.apartment-details {
-  margin: 4px 0;
-  color: #666;
-  font-size: 14px;
-}
-
-.apartment-price {
-  font-weight: bold;
-  color: #007bff;
-  font-size: 16px;
-}
-
-.apartment-rating {
-  margin: 8px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.apartment-actions {
-  margin-top: 10px;
-  display: flex;
-  gap: 8px;
-}
-
-.apartment-actions .action-btn {
-  padding: 6px 12px;
-  font-size: 12px;
+/* Адаптивность */
+@media (max-width: 768px) {
+  .complex-card {
+    flex-direction: column;
+  }
+  
+  .complex-image {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .complex-type {
+    position: static;
+    align-self: flex-end;
+    margin-top: 10px;
+  }
+  
+  .search-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-input,
+  .filter-select {
+    min-width: auto;
+  }
 }
 </style> 

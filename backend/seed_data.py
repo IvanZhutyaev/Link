@@ -1,14 +1,14 @@
 from sqlalchemy.orm import Session
-from backend.Database.DB_connection import SessionLocal, engine
-from backend.Models.All_models import User, Law_Face, Property, Booking, ResidentialComplex
-from backend.Cruds.User_crud import create_user
-from backend.Cruds.Law_crud import create_zastroy
-from backend.Cruds.Property_crud import create_property
-from backend.Cruds.RC_crud import create_residential_complex
-from backend.Schemas.User_schema import UserModel
-from backend.Schemas.Zastroy_schema import ZastroyModel
-from backend.Schemas.Property_schema import PropertyModel
-from backend.Schemas.RC_schema import ResidentialComplexCreate
+from Database.DB_connection import SessionLocal, engine
+from Models.All_models import User, Law_Face, Property, Booking, ResidentialComplex
+from Cruds.User_crud import create_user
+from Cruds.Law_crud import create_zastroy
+from Cruds.Property_crud import create_property
+from Cruds.RC_crud import create_residential_complex
+from Schemas.User_schema import UserModel
+from Schemas.Zastroy_schema import ZastroyModel
+from Schemas.Property_schema import PropertyModel
+from Schemas.RC_schema import ResidentialComplexCreate
 
 
 def seed_database():
@@ -72,6 +72,7 @@ def seed_database():
                 name="ЖК 'Солнечный'",
                 address="г. Москва, ул. Солнечная, 15",
                 developer_name="ООО 'Солнечный Дом'",
+                zastroy_id=created_zastroys[0].id if created_zastroys else 1,
                 city="Москва",
                 commissioning_date="2025",
                 housing_class="Комфорт",
@@ -82,6 +83,7 @@ def seed_database():
                 name="ЖК 'Парковый'",
                 address="г. Москва, ул. Парковая, 8",
                 developer_name="ООО 'Парковый Квартал'",
+                zastroy_id=created_zastroys[1].id if len(created_zastroys) > 1 else 1,
                 city="Москва",
                 commissioning_date="2024",
                 housing_class="Эконом",
@@ -92,11 +94,34 @@ def seed_database():
                 name="ЖК 'Речной'",
                 address="г. Москва, наб. Речная, 12",
                 developer_name="ООО 'Солнечный Дом'",
+                zastroy_id=created_zastroys[0].id if created_zastroys else 1,
                 city="Москва",
                 commissioning_date="2026",
                 housing_class="Бизнес",
                 status="Планируется",
                 avatar_url="https://via.placeholder.com/300x200/ff9500/ffffff?text=ЖК+Речной"
+            ),
+            ResidentialComplexCreate(
+                name="ЖК 'Премиум'",
+                address="г. Москва, ул. Премиумная, 1",
+                developer_name="ООО 'Парковый Квартал'",
+                zastroy_id=created_zastroys[1].id if len(created_zastroys) > 1 else 1,
+                city="Москва",
+                commissioning_date="2025",
+                housing_class="Премиум",
+                status="Строится",
+                avatar_url="https://via.placeholder.com/300x200/fd7e14/ffffff?text=ЖК+Премиум"
+            ),
+            ResidentialComplexCreate(
+                name="ЖК 'Элитный'",
+                address="г. Москва, ул. Элитная, 10",
+                developer_name="ООО 'Солнечный Дом'",
+                zastroy_id=created_zastroys[0].id if created_zastroys else 1,
+                city="Москва",
+                commissioning_date="2027",
+                housing_class="Элит",
+                status="Планируется",
+                avatar_url="https://via.placeholder.com/300x200/dc3545/ffffff?text=ЖК+Элитный"
             )
         ]
         
@@ -164,8 +189,8 @@ def seed_database():
         
         # Создаем тестовые брони
         if created_users and created_properties:
-            from backend.Cruds.Property_crud import create_booking
-            from backend.Schemas.Property_schema import BookingModel
+            from Cruds.Property_crud import create_booking
+            from Schemas.Property_schema import BookingModel
             
             test_booking = BookingModel(property_id=created_properties[0].id)
             try:

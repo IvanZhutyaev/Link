@@ -112,6 +112,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { propertyAPI } from '../utils/api.js'
 import analytics from '../utils/analytics.js'
 
+const emit = defineEmits(['search-complexes'])
+
 const currentSlide = ref(0)
 const galleryItems = ref([])
 
@@ -273,19 +275,8 @@ const handleGalleryItemClick = (item) => {
 }
 
 const handleSearch = () => {
-  // Отслеживаем поиск в главной галерее с выбранными фильтрами
-  const filters = {
-    city: selectedCity.value,
-    type: selectedType.value,
-    timeline: selectedTimeline.value,
-    status: selectedStatus.value
-  }
-  
-  analytics.sendEvent(0, "hero_search_with_filters", filters)
-  console.log('Поиск с фильтрами:', filters)
-  
-  // Здесь можно добавить логику для перехода к результатам поиска
-  // или отправки запроса к API
+  analytics.sendEvent(0, "hero_search_click")
+  emit('search-complexes')
 }
 
 onMounted(() => {

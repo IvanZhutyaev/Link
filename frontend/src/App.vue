@@ -117,7 +117,7 @@ const handleComplexSelected = (complex) => {
         @logout="logout"
         @search-complexes="showComplexSearch"
       />
-      <HeroGallery />
+      <HeroGallery @search-complexes="showComplexSearch" />
       <TopDevelopers />
       <MapYandex />
     </div>
