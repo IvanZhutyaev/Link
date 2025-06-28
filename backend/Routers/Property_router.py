@@ -59,8 +59,11 @@ def search_properties_endpoint(
     city: Optional[str] = Query(None, description="Город"),
     min_price: Optional[float] = Query(None, description="Минимальная цена"),
     max_price: Optional[float] = Query(None, description="Максимальная цена"),
+    rooms: Optional[int] = Query(None, description="Количество комнат"),
+    min_area: Optional[float] = Query(None, description="Минимальная площадь"),
+    max_area: Optional[float] = Query(None, description="Максимальная площадь"),
     is_available: Optional[bool] = Query(True, description="Доступность"),
-    complex_id: Optional[int] = Query(None, description="ID ЖК"),
+    complex_id: Optional[str] = Query(None, description="ID ЖК или 'any' для всех квартир"),
     db: Session = Depends(get_db)
 ):
     """Поиск недвижимости по параметрам"""
@@ -68,6 +71,9 @@ def search_properties_endpoint(
         city=city,
         min_price=min_price,
         max_price=max_price,
+        rooms=rooms,
+        min_area=min_area,
+        max_area=max_area,
         is_available=is_available,
         complex_id=complex_id
     )

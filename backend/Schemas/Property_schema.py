@@ -41,7 +41,7 @@ class PropertySearch(BaseModel):
     min_area: Optional[float] = None
     max_area: Optional[float] = None
     is_available: Optional[bool] = True
-    complex_id: Optional[int] = None  # Поиск по ЖК
+    complex_id: Optional[str] = None  # 'any' для всех квартир, или конкретный ID ЖК
 
 
 class RatingModel(BaseModel):

@@ -225,7 +225,7 @@ export default {
           this.viewApartments(this.selectedComplex.id)
         }
       } catch (error) {
-        console.error('Ошибка при бронировании:', error)
+        console.error('Ошибка при бронировании квартиры:', error)
         alert('Ошибка при бронировании квартиры')
       }
     },

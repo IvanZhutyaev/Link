@@ -67,32 +67,38 @@ def get_property(db: Session, property_id: int) -> Optional[Property]:
 def search_properties(db: Session, search_params: PropertySearch) -> List[Property]:
     query = db.query(Property)
     
+    # Фильтр по городу
     if search_params.city:
         query = query.filter(Property.city.ilike(f"%{search_params.city}%"))
     
+    # Фильтр по цене
     if search_params.min_price is not None:
         query = query.filter(Property.price >= search_params.min_price)
-    
     if search_params.max_price is not None:
         query = query.filter(Property.price <= search_params.max_price)
     
+    # Фильтр по количеству комнат
     if search_params.rooms is not None:
         query = query.filter(Property.rooms == search_params.rooms)
     
+    # Фильтр по площади
     if search_params.min_area is not None:
         query = query.filter(Property.area >= search_params.min_area)
-    
     if search_params.max_area is not None:
         query = query.filter(Property.area <= search_params.max_area)
     
+    # Фильтр по доступности
     if search_params.is_available is not None:
         query = query.filter(Property.is_available == search_params.is_available)
     
+    # Фильтр по ЖК (complex_id)
     if search_params.complex_id is not None:
-        query = query.filter(Property.complex_id == search_params.complex_id)
-    
-    # Исключаем квартиры с ошибками
-    query = query.filter(Property.has_error == False)
+        if search_params.complex_id == 'any':
+            # Ищем только квартиры (объекты с complex_id)
+            query = query.filter(Property.complex_id.isnot(None))
+        else:
+            # Ищем квартиры в конкретном ЖК
+            query = query.filter(Property.complex_id == search_params.complex_id)
     
     return query.all()
 
@@ -137,6 +143,10 @@ def create_booking(db: Session, user_id: int, booking_data: BookingModel) -> Boo
     if not property_obj or not property_obj.is_available or property_obj.has_error:
         raise ValueError("Недвижимость недоступна для бронирования")
     
+    # Проверяем, что это квартира (должна быть привязана к ЖК)
+    if not property_obj.complex_id:
+        raise ValueError("Можно бронировать только квартиры, а не жилые комплексы")
+    
     # Проверяем, что у пользователя нет активной брони на эту недвижимость
     existing_booking = db.query(Booking).filter(
         and_(
@@ -147,7 +157,7 @@ def create_booking(db: Session, user_id: int, booking_data: BookingModel) -> Boo
     ).first()
     
     if existing_booking:
-        raise ValueError("У вас уже есть активная бронь на эту недвижимость")
+        raise ValueError("У вас уже есть активная бронь на эту квартиру")
     
     # Устанавливаем срок действия брони (например, 7 дней)
     expires_at = datetime.utcnow() + timedelta(days=7)
@@ -191,6 +201,10 @@ def create_purchase(db: Session, user_id: int, purchase_data: PurchaseModel) -> 
     if not property_obj or not property_obj.is_available or property_obj.has_error:
         raise ValueError("Недвижимость недоступна для покупки")
     
+    # Проверяем, что это квартира (должна быть привязана к ЖК)
+    if not property_obj.complex_id:
+        raise ValueError("Можно покупать только квартиры, а не жилые комплексы")
+    
     # Проверяем, что у пользователя нет активной покупки на эту недвижимость
     existing_purchase = db.query(Purchase).filter(
         and_(
@@ -201,7 +215,7 @@ def create_purchase(db: Session, user_id: int, purchase_data: PurchaseModel) -> 
     ).first()
     
     if existing_purchase:
-        raise ValueError("У вас уже есть активная покупка на эту недвижимость")
+        raise ValueError("У вас уже есть активная покупка на эту квартиру")
     
     # Создаем покупку
     db_purchase = Purchase(
@@ -239,6 +253,10 @@ def create_mortgage(db: Session, user_id: int, mortgage_data: MortgageModel) -> 
     if not property_obj or not property_obj.is_available or property_obj.has_error:
         raise ValueError("Недвижимость недоступна для ипотеки")
     
+    # Проверяем, что это квартира (должна быть привязана к ЖК)
+    if not property_obj.complex_id:
+        raise ValueError("Можно оформить ипотеку только на квартиры, а не на жилые комплексы")
+    
     # Проверяем, что у пользователя нет активной ипотечной заявки на эту недвижимость
     existing_mortgage = db.query(Mortgage).filter(
         and_(
@@ -249,7 +267,7 @@ def create_mortgage(db: Session, user_id: int, mortgage_data: MortgageModel) -> 
     ).first()
     
     if existing_mortgage:
-        raise ValueError("У вас уже есть активная ипотечная заявка на эту недвижимость")
+        raise ValueError("У вас уже есть активная ипотечная заявка на эту квартиру")
     
     # Рассчитываем ежемесячный платеж
     monthly_payment = calculate_monthly_payment(
@@ -354,18 +372,22 @@ def purchase_property(db: Session, booking_id: int, user_id: int) -> bool:
     # Создаем покупку
     property_obj = get_property(db, booking.property_id)
     if not property_obj or not property_obj.is_available:
-        raise ValueError("Недвижимость недоступна для покупки")
+        raise ValueError("Квартира недоступна для покупки")
+    
+    # Проверяем, что это квартира (должна быть привязана к ЖК)
+    if not property_obj.complex_id:
+        raise ValueError("Можно покупать только квартиры, а не жилые комплексы")
     
     db_purchase = Purchase(
         user_id=user_id,
         property_id=booking.property_id,
-        purchase_price=property_obj.price,
-        payment_method="cash",
+        purchase_price=property_obj.price,  # Используем цену из объекта недвижимости
+        payment_method="cash",  # По умолчанию наличные
         status="completed",
         booking_id=booking_id
     )
     
-    # Делаем недвижимость недоступной
+    # Делаем недвижимость недоступной и устанавливаем владельца
     property_obj.is_available = False
     property_obj.owner_id = user_id
     

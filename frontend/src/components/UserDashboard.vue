@@ -31,74 +31,12 @@
         </div>
       </div>
 
-      <!-- Купленные объекты -->
-      <div v-if="!loading" class="dashboard-section">
-        <h2>Мои покупки</h2>
-        <div v-if="purchasedProperties.length === 0" class="empty-state">
-          <p>У вас пока нет купленных объектов</p>
-        </div>
-        <div v-else class="properties-grid">
-          <div 
-            v-for="property in purchasedProperties" 
-            :key="property.id"
-            class="property-card"
-          >
-            <div class="property-image">
-              <img :src="property.image" :alt="property.name" />
-              <div class="property-status purchased">Куплено</div>
-            </div>
-            <div class="property-info">
-              <h3>{{ property.name }}</h3>
-              <p class="property-address">{{ property.address }}</p>
-              <p class="property-price">{{ property.price }} ₽</p>
-              <p class="purchase-date">Дата покупки: {{ property.purchase_date }}</p>
-              <p class="payment-method">Способ оплаты: {{ property.payment_method }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Ипотечные заявки -->
-      <div v-if="!loading" class="dashboard-section">
-        <h2>Мои ипотечные заявки</h2>
-        <div v-if="mortgages.length === 0" class="empty-state">
-          <p>У вас пока нет ипотечных заявок</p>
-        </div>
-        <div v-else class="properties-grid">
-          <div 
-            v-for="mortgage in mortgages" 
-            :key="mortgage.id"
-            class="property-card"
-          >
-            <div class="property-image">
-              <img :src="mortgage.property.image" :alt="mortgage.property.name" />
-              <div class="property-status" :class="getMortgageStatusClass(mortgage.status)">
-                {{ getMortgageStatusText(mortgage.status) }}
-              </div>
-            </div>
-            <div class="property-info">
-              <h3>{{ mortgage.property.name }}</h3>
-              <p class="property-address">{{ mortgage.property.address }}</p>
-              <p class="property-price">{{ mortgage.property.price }} ₽</p>
-              <div class="mortgage-details">
-                <p><strong>Сумма кредита:</strong> {{ mortgage.loan_amount.toLocaleString() }} ₽</p>
-                <p><strong>Первоначальный взнос:</strong> {{ mortgage.down_payment.toLocaleString() }} ₽</p>
-                <p><strong>Ежемесячный платеж:</strong> {{ mortgage.monthly_payment.toLocaleString() }} ₽</p>
-                <p><strong>Ставка:</strong> {{ mortgage.interest_rate }}%</p>
-                <p><strong>Срок:</strong> {{ mortgage.loan_term_years }} лет</p>
-                <p v-if="mortgage.bank_name"><strong>Банк:</strong> {{ mortgage.bank_name }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Забронированные объекты -->
       <div v-if="!loading" class="dashboard-section">
-        <h2>Забронированные объекты</h2>
+        <h2>Забронированные квартиры</h2>
         <div v-if="bookedProperties.length === 0" class="empty-state">
-          <p>У вас пока нет забронированных объектов</p>
-          <button class="browse-btn" @click="browseProperties">Найти недвижимость</button>
+          <p>У вас пока нет забронированных квартир</p>
+          <button class="browse-btn" @click="browseProperties">Найти квартиру</button>
         </div>
         <div v-else class="properties-grid">
           <div 
@@ -130,42 +68,104 @@
         </div>
       </div>
 
-      <!-- Поиск недвижимости -->
+      <!-- Купленные объекты -->
       <div v-if="!loading" class="dashboard-section">
-        <h2>Найти недвижимость</h2>
-        <div class="search-filters">
-          <div class="filter-group">
-            <label>Город:</label>
-            <input v-model="searchFilters.city" placeholder="Введите город" />
+        <h2>Купленные квартиры</h2>
+        <div v-if="purchasedProperties.length === 0" class="empty-state">
+          <p>У вас пока нет купленных квартир</p>
+        </div>
+        <div v-else class="properties-grid">
+          <div 
+            v-for="property in purchasedProperties" 
+            :key="property.id"
+            class="property-card"
+          >
+            <div class="property-image">
+              <img :src="property.image" :alt="property.name" />
+              <div class="property-status purchased">Куплено</div>
+            </div>
+            <div class="property-info">
+              <h3>{{ property.name }}</h3>
+              <p class="property-address">{{ property.address }}</p>
+              <p class="property-price">{{ property.price }} ₽</p>
+              <p class="property-payment">Способ оплаты: {{ getPaymentMethodText(property.payment_method) }}</p>
+            </div>
           </div>
-          <div class="filter-group">
-            <label>Цена от:</label>
-            <input v-model="searchFilters.minPrice" type="number" placeholder="0" />
+        </div>
+      </div>
+
+      <!-- Ипотечные заявки -->
+      <div v-if="!loading" class="dashboard-section">
+        <h2>Ипотечные заявки</h2>
+        <div v-if="mortgages.length === 0" class="empty-state">
+          <p>У вас пока нет ипотечных заявок</p>
+        </div>
+        <div v-else class="mortgages-list">
+          <div 
+            v-for="mortgage in mortgages" 
+            :key="mortgage.id"
+            class="mortgage-card"
+          >
+            <div class="mortgage-info">
+              <h3>{{ mortgage.property_name }}</h3>
+              <p class="mortgage-amount">Сумма кредита: {{ mortgage.loan_amount.toLocaleString() }} ₽</p>
+              <p class="mortgage-rate">Ставка: {{ mortgage.interest_rate }}%</p>
+              <p class="mortgage-term">Срок: {{ mortgage.loan_term_years }} лет</p>
+              <p class="mortgage-status">Статус: {{ mortgage.status }}</p>
+            </div>
           </div>
-          <div class="filter-group">
-            <label>Цена до:</label>
-            <input v-model="searchFilters.maxPrice" type="number" placeholder="10000000" />
+        </div>
+      </div>
+
+      <!-- Поиск недвижимости -->
+      <div class="dashboard-section">
+        <h2>Поиск квартир</h2>
+        <div class="search-form">
+          <div class="form-row">
+            <input 
+              v-model="searchFilters.city" 
+              type="text" 
+              placeholder="Город"
+              class="form-input"
+            />
+            <input 
+              v-model="searchFilters.minPrice" 
+              type="number" 
+              placeholder="Мин. цена"
+              class="form-input"
+            />
+            <input 
+              v-model="searchFilters.maxPrice" 
+              type="number" 
+              placeholder="Макс. цена"
+              class="form-input"
+            />
           </div>
-          <div class="filter-group">
-            <label>Количество комнат:</label>
-            <select v-model="searchFilters.rooms">
-              <option value="">Любое</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4+</option>
+          <div class="form-row">
+            <select v-model="searchFilters.rooms" class="form-select">
+              <option value="">Любое количество комнат</option>
+              <option value="1">1 комната</option>
+              <option value="2">2 комнаты</option>
+              <option value="3">3 комнаты</option>
+              <option value="4">4+ комнат</option>
             </select>
+            <input 
+              v-model="searchFilters.minArea" 
+              type="number" 
+              placeholder="Мин. площадь (м²)"
+              class="form-input"
+            />
+            <input 
+              v-model="searchFilters.maxArea" 
+              type="number" 
+              placeholder="Макс. площадь (м²)"
+              class="form-input"
+            />
           </div>
-          <div class="filter-group">
-            <label>Площадь от (м²):</label>
-            <input v-model="searchFilters.minArea" type="number" placeholder="0" />
+          <div class="form-actions">
+            <button @click="searchProperties" class="search-btn">Найти квартиры</button>
+            <button @click="clearFilters" class="clear-btn">Очистить</button>
           </div>
-          <div class="filter-group">
-            <label>Площадь до (м²):</label>
-            <input v-model="searchFilters.maxArea" type="number" placeholder="200" />
-          </div>
-          <button class="search-btn" @click="searchProperties">Найти</button>
-          <button class="clear-btn" @click="clearFilters">Очистить</button>
         </div>
 
         <div v-if="searchResults.length > 0" class="search-results">
@@ -224,10 +224,10 @@
     <!-- Модальное окно покупки -->
     <div v-if="showPurchaseModal" class="modal-overlay" @click="closePurchaseModal">
       <div class="modal-content" @click.stop>
-        <h3>Покупка недвижимости</h3>
+        <h3>Купить квартиру</h3>
         <div class="form-group">
           <label>Цена покупки (₽):</label>
-          <input v-model="purchaseForm.price" type="number" />
+          <input v-model="purchaseForm.price" type="number" placeholder="Введите цену" />
         </div>
         <div class="form-group">
           <label>Способ оплаты:</label>
@@ -238,32 +238,31 @@
           </select>
         </div>
         <div class="modal-actions">
-          <button class="btn-secondary" @click="closePurchaseModal">Отмена</button>
-          <button class="btn-primary" @click="confirmPurchase">Купить</button>
+          <button class="btn secondary" @click="closePurchaseModal">Отмена</button>
+          <button class="btn primary" @click="confirmPurchase">Купить</button>
         </div>
       </div>
     </div>
 
     <!-- Модальное окно ипотеки -->
     <div v-if="showMortgageModal" class="modal-overlay" @click="closeMortgageModal">
-      <div class="modal-content mortgage-modal" @click.stop>
-        <h3>Заявка на ипотеку</h3>
+      <div class="modal-content" @click.stop>
+        <h3>Оформить ипотеку на квартиру</h3>
         <div class="form-group">
           <label>Сумма кредита (₽):</label>
-          <input v-model="mortgageForm.loan_amount" type="number" />
+          <input v-model="mortgageForm.loan_amount" type="number" placeholder="Введите сумму кредита" />
         </div>
         <div class="form-group">
           <label>Первоначальный взнос (₽):</label>
-          <input v-model="mortgageForm.down_payment" type="number" />
+          <input v-model="mortgageForm.down_payment" type="number" placeholder="Введите первоначальный взнос" />
         </div>
         <div class="form-group">
           <label>Процентная ставка (%):</label>
-          <input v-model="mortgageForm.interest_rate" type="number" step="0.1" />
+          <input v-model="mortgageForm.interest_rate" type="number" step="0.1" placeholder="Например: 7.5" />
         </div>
         <div class="form-group">
           <label>Срок кредита (лет):</label>
           <select v-model="mortgageForm.loan_term_years">
-            <option value="5">5 лет</option>
             <option value="10">10 лет</option>
             <option value="15">15 лет</option>
             <option value="20">20 лет</option>
@@ -280,8 +279,8 @@
           <textarea v-model="mortgageForm.application_notes" placeholder="Дополнительная информация"></textarea>
         </div>
         <div class="modal-actions">
-          <button class="btn-secondary" @click="closeMortgageModal">Отмена</button>
-          <button class="btn-primary" @click="confirmMortgage">Подать заявку</button>
+          <button class="btn secondary" @click="closeMortgageModal">Отмена</button>
+          <button class="btn primary" @click="confirmMortgage">Подать заявку</button>
         </div>
       </div>
     </div>
@@ -391,7 +390,6 @@ const loadUserData = async () => {
       address: purchase.property.address,
       price: purchase.purchase_price.toLocaleString(),
       image: purchase.property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Недвижимость',
-      purchase_date: new Date(purchase.purchase_date).toLocaleDateString('ru-RU'),
       payment_method: getPaymentMethodText(purchase.payment_method)
     }))
     
@@ -458,8 +456,8 @@ const saveProfile = async () => {
 }
 
 const browseProperties = () => {
-  // Переход к поиску недвижимости
-  console.log('Поиск недвижимости')
+  // Переход к поиску квартир
+  console.log('Поиск квартир')
 }
 
 const searchProperties = async () => {
@@ -467,13 +465,19 @@ const searchProperties = async () => {
     // Отслеживаем поиск
     analytics.trackSearch(searchFilters)
     
-    const results = await propertyAPI.searchProperties(searchFilters)
+    // Добавляем фильтр для поиска только квартир (объектов с complex_id)
+    const searchParams = {
+      ...searchFilters,
+      complex_id: 'any' // Это будет означать, что мы ищем только объекты с complex_id
+    }
+    
+    const results = await propertyAPI.searchProperties(searchParams)
     searchResults.value = results.map(property => ({
       id: property.id,
       name: property.name,
       address: property.address,
       price: property.price.toLocaleString(),
-      image: property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Недвижимость'
+      image: property.image_url || 'https://via.placeholder.com/300x200/007aff/ffffff?text=Квартира'
     }))
   } catch (error) {
     console.error('Ошибка поиска недвижимости:', error)
@@ -496,12 +500,12 @@ const bookProperty = async (propertyId) => {
     }
     
     await propertyAPI.bookProperty(propertyId, userId)
-    alert('Недвижимость забронирована!')
+    alert('Квартира забронирована!')
     // Перезагружаем данные
     await loadUserData()
   } catch (error) {
     console.error('Ошибка бронирования:', error)
-    alert('Ошибка при бронировании')
+    alert('Ошибка при бронировании квартиры')
   }
 }
 
@@ -535,12 +539,12 @@ const confirmPurchase = async () => {
       payment_method: purchaseForm.payment_method
     }, userId)
     
-    alert('Недвижимость успешно куплена!')
+    alert('Квартира успешно куплена!')
     closePurchaseModal()
     await loadUserData()
   } catch (error) {
     console.error('Ошибка покупки:', error)
-    alert('Ошибка при покупке')
+    alert('Ошибка при покупке квартиры')
   }
 }
 
@@ -628,8 +632,8 @@ const viewDetails = (propertyId) => {
   // Отслеживаем просмотр деталей квартиры
   analytics.trackApartmentView(propertyId)
   
-  // Просмотр деталей объекта
-  console.log('Детали объекта:', propertyId)
+  // Просмотр деталей квартиры
+  console.log('Детали квартиры:', propertyId)
 }
 
 const clearFilters = () => {
@@ -905,24 +909,10 @@ onMounted(() => {
   margin-bottom: 0.5rem;
 }
 
-.purchase-date,
-.payment-method {
+.property-payment {
   font-size: 0.9rem;
   color: #666;
   margin-bottom: 0.25rem;
-}
-
-.mortgage-details {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 6px;
-}
-
-.mortgage-details p {
-  margin: 0.25rem 0;
-  font-size: 0.9rem;
-  color: #2c3e50;
 }
 
 .property-actions {
