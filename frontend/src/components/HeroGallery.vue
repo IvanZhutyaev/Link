@@ -9,12 +9,79 @@
           Более 50 000 новостроек по всей России. Проверенные застройщики, 
           прозрачные условия и выгодные цены.
         </p>
-        <div class="hero-search">
-          <input 
-            type="text" 
-            placeholder="Введите название города или района"
-            class="search-input"
-          />
+        <div class="hero-filters">
+          <!-- Фильтр Город -->
+          <div class="filter-dropdown" @click="toggleDropdown('city')">
+            <button class="filter-btn">
+              {{ selectedCity || 'Город' }}
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="dropdown-menu" v-if="activeDropdown === 'city'">
+              <div 
+                v-for="city in cities" 
+                :key="city"
+                class="dropdown-item"
+                @click="selectCity(city)"
+              >
+                {{ city }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Фильтр Тип -->
+          <div class="filter-dropdown" @click="toggleDropdown('type')">
+            <button class="filter-btn">
+              {{ selectedType || 'Тип' }}
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="dropdown-menu" v-if="activeDropdown === 'type'">
+              <div 
+                v-for="type in propertyTypes" 
+                :key="type"
+                class="dropdown-item"
+                @click="selectType(type)"
+              >
+                {{ type }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Фильтр Сроки -->
+          <div class="filter-dropdown" @click="toggleDropdown('timeline')">
+            <button class="filter-btn">
+              {{ selectedTimeline || 'Сроки' }}
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="dropdown-menu" v-if="activeDropdown === 'timeline'">
+              <div 
+                v-for="timeline in timelines" 
+                :key="timeline"
+                class="dropdown-item"
+                @click="selectTimeline(timeline)"
+              >
+                {{ timeline }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Фильтр Статус -->
+          <div class="filter-dropdown" @click="toggleDropdown('status')">
+            <button class="filter-btn">
+              {{ selectedStatus || 'Статус' }}
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="dropdown-menu" v-if="activeDropdown === 'status'">
+              <div 
+                v-for="status in statuses" 
+                :key="status"
+                class="dropdown-item"
+                @click="selectStatus(status)"
+              >
+                {{ status }}
+              </div>
+            </div>
+          </div>
+
           <button class="search-btn" @click="handleSearch">Найти</button>
         </div>
       </div>
@@ -41,12 +108,98 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { propertyAPI } from '../utils/api.js'
 import analytics from '../utils/analytics.js'
 
 const currentSlide = ref(0)
 const galleryItems = ref([])
+
+// Состояние фильтров
+const activeDropdown = ref(null)
+const selectedCity = ref('')
+const selectedType = ref('')
+const selectedTimeline = ref('')
+const selectedStatus = ref('')
+
+// Опции для фильтров
+const cities = ref([
+  'Москва',
+  'Санкт-Петербург',
+  'Новосибирск',
+  'Екатеринбург',
+  'Казань',
+  'Нижний Новгород',
+  'Челябинск',
+  'Самара',
+  'Уфа',
+  'Ростов-на-Дону'
+])
+
+const propertyTypes = ref([
+  'Студия',
+  '1 комната',
+  '2 комнаты',
+  '3 комнаты',
+  '4+ комнат',
+  'Пентхаус',
+  'Дуплекс'
+])
+
+const timelines = ref([
+  'Сдан',
+  '2024 год',
+  '2025 год',
+  '2026 год',
+  '2027+ год'
+])
+
+const statuses = ref([
+  'В продаже',
+  'Бронирование',
+  'Скоро в продаже',
+  'Завершен'
+])
+
+// Методы для работы с фильтрами
+const toggleDropdown = (dropdownName) => {
+  if (activeDropdown.value === dropdownName) {
+    activeDropdown.value = null
+  } else {
+    activeDropdown.value = dropdownName
+  }
+}
+
+const selectCity = (city) => {
+  selectedCity.value = city
+  activeDropdown.value = null
+  analytics.sendEvent(0, "filter_city_selected", city)
+}
+
+const selectType = (type) => {
+  selectedType.value = type
+  activeDropdown.value = null
+  analytics.sendEvent(0, "filter_type_selected", type)
+}
+
+const selectTimeline = (timeline) => {
+  selectedTimeline.value = timeline
+  activeDropdown.value = null
+  analytics.sendEvent(0, "filter_timeline_selected", timeline)
+}
+
+const selectStatus = (status) => {
+  selectedStatus.value = status
+  activeDropdown.value = null
+  analytics.sendEvent(0, "filter_status_selected", status)
+}
+
+// Закрытие выпадающих меню при клике вне их
+const handleClickOutside = (event) => {
+  if (!event.target.closest('.filter-dropdown')) {
+    activeDropdown.value = null
+  }
+}
 
 // Загрузка данных о ЖК
 const loadGalleryData = async () => {
@@ -120,18 +273,36 @@ const handleGalleryItemClick = (item) => {
 }
 
 const handleSearch = () => {
-  // Отслеживаем поиск в главной галерее
-  analytics.sendEvent(0, "hero_search")
-  console.log('Поиск в главной галерее')
+  // Отслеживаем поиск в главной галерее с выбранными фильтрами
+  const filters = {
+    city: selectedCity.value,
+    type: selectedType.value,
+    timeline: selectedTimeline.value,
+    status: selectedStatus.value
+  }
+  
+  analytics.sendEvent(0, "hero_search_with_filters", filters)
+  console.log('Поиск с фильтрами:', filters)
+  
+  // Здесь можно добавить логику для перехода к результатам поиска
+  // или отправки запроса к API
 }
 
 onMounted(() => {
   loadGalleryData()
   
+  // Добавляем обработчик клика вне выпадающих меню
+  document.addEventListener('click', handleClickOutside)
+  
   // Автоматическое переключение слайдов
   setInterval(() => {
     nextSlide()
   }, 5000)
+})
+
+onUnmounted(() => {
+  // Удаляем обработчик при размонтировании компонента
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -172,34 +343,94 @@ onMounted(() => {
   line-height: 1.6;
 }
 
-.hero-search {
+.hero-filters {
   display: flex;
-  gap: 1rem;
-  max-width: 500px;
+  gap: 0.5rem;
+  max-width: 600px;
+  flex-wrap: wrap;
 }
 
-.search-input {
+.filter-dropdown {
+  position: relative;
   flex: 1;
-  padding: 15px 20px;
+  min-width: 120px;
+}
+
+.filter-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
   border: none;
+  padding: 12px 16px;
   border-radius: 8px;
-  font-size: 1rem;
-  outline: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-btn:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-arrow {
+  margin-left: 8px;
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.filter-dropdown:hover .dropdown-arrow {
+  transform: rotate(180deg);
 }
 
 .search-btn {
   background: #007aff;
   color: white;
   border: none;
-  padding: 15px 30px;
+  padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .search-btn:hover {
   background: #0056cc;
+  transform: translateY(-1px);
 }
 
 .gallery {
@@ -308,8 +539,23 @@ onMounted(() => {
     font-size: 1rem;
   }
   
-  .hero-search {
+  .hero-filters {
     flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .filter-dropdown {
+    min-width: auto;
+  }
+  
+  .filter-btn {
+    padding: 14px 16px;
+    font-size: 1rem;
+  }
+  
+  .search-btn {
+    padding: 14px 24px;
+    font-size: 1rem;
   }
   
   .gallery-grid {
