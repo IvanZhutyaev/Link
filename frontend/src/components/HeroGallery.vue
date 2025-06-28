@@ -359,7 +359,7 @@ onUnmounted(() => {
 .filter-btn {
   width: 100%;
   background: rgba(255, 255, 255, 0.9);
-  color: #333;
+  color: #000000;
   border: none;
   padding: 12px 16px;
   border-radius: 8px;
@@ -396,6 +396,7 @@ onUnmounted(() => {
   cursor: pointer;
   transition: background-color 0.2s ease;
   border-bottom: 1px solid #f0f0f0;
+  color: #000000;
 }
 
 .dropdown-item:last-child {
