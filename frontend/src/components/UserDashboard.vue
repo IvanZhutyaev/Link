@@ -121,55 +121,117 @@
       <div class="dashboard-section">
         <h2>Поиск квартир</h2>
         <div class="search-form">
-          <div class="form-row">
-            <input 
-              v-model="searchFilters.city" 
-              type="text" 
-              placeholder="Город"
-              class="form-input"
-            />
-            <input 
-              v-model="searchFilters.minPrice" 
-              type="number" 
-              placeholder="Мин. цена"
-              class="form-input"
-            />
-            <input 
-              v-model="searchFilters.maxPrice" 
-              type="number" 
-              placeholder="Макс. цена"
-              class="form-input"
-            />
+          <!-- Основные фильтры -->
+          <div class="search-filters-grid">
+            <div class="filter-group">
+              <label class="filter-label">Город</label>
+              <input 
+                v-model="searchFilters.city" 
+                type="text" 
+                placeholder="Введите город"
+                class="filter-input"
+              />
+            </div>
+            
+            <div class="filter-group">
+              <label class="filter-label">Цена</label>
+              <div class="price-range">
+                <input 
+                  v-model="searchFilters.minPrice" 
+                  type="number" 
+                  placeholder="От"
+                  class="filter-input price-input"
+                />
+                <span class="price-separator">—</span>
+                <input 
+                  v-model="searchFilters.maxPrice" 
+                  type="number" 
+                  placeholder="До"
+                  class="filter-input price-input"
+                />
+              </div>
+            </div>
+            
+            <div class="filter-group">
+              <label class="filter-label">Площадь</label>
+              <div class="area-range">
+                <input 
+                  v-model="searchFilters.minArea" 
+                  type="number" 
+                  placeholder="От"
+                  class="filter-input area-input"
+                />
+                <span class="area-separator">—</span>
+                <input 
+                  v-model="searchFilters.maxArea" 
+                  type="number" 
+                  placeholder="До"
+                  class="filter-input area-input"
+                />
+                <span class="area-unit">м²</span>
+              </div>
+            </div>
           </div>
-          <div class="form-row">
-            <select v-model="searchFilters.rooms" class="form-select">
-              <option value="">Любое количество комнат</option>
-              <option value="1">1 комната</option>
-              <option value="2">2 комнаты</option>
-              <option value="3">3 комнаты</option>
-              <option value="4">4+ комнат</option>
-            </select>
-            <input 
-              v-model="searchFilters.minArea" 
-              type="number" 
-              placeholder="Мин. площадь (м²)"
-              class="form-input"
-            />
-            <input 
-              v-model="searchFilters.maxArea" 
-              type="number" 
-              placeholder="Макс. площадь (м²)"
-              class="form-input"
-            />
+          
+          <!-- Фильтр по комнатам -->
+          <div class="rooms-filter">
+            <label class="filter-label">Количество комнат</label>
+            <div class="rooms-buttons">
+              <button 
+                @click="searchFilters.rooms = ''" 
+                :class="['room-btn', { active: searchFilters.rooms === '' }]"
+              >
+                Все
+              </button>
+              <button 
+                @click="searchFilters.rooms = '1'" 
+                :class="['room-btn', { active: searchFilters.rooms === '1' }]"
+              >
+                1
+              </button>
+              <button 
+                @click="searchFilters.rooms = '2'" 
+                :class="['room-btn', { active: searchFilters.rooms === '2' }]"
+              >
+                2
+              </button>
+              <button 
+                @click="searchFilters.rooms = '3'" 
+                :class="['room-btn', { active: searchFilters.rooms === '3' }]"
+              >
+                3
+              </button>
+              <button 
+                @click="searchFilters.rooms = '4'" 
+                :class="['room-btn', { active: searchFilters.rooms === '4' }]"
+              >
+                4+
+              </button>
+            </div>
           </div>
-          <div class="form-actions">
-            <button @click="searchProperties" class="search-btn">Найти квартиры</button>
-            <button @click="clearFilters" class="clear-btn">Очистить</button>
+          
+          <!-- Кнопки действий -->
+          <div class="search-actions">
+            <button @click="searchProperties" class="search-btn">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              Найти квартиры
+            </button>
+            <button @click="clearFilters" class="clear-btn">
+              <svg class="clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+              </svg>
+              Очистить
+            </button>
           </div>
         </div>
 
         <div v-if="searchResults.length > 0" class="search-results">
-          <h3>Результаты поиска</h3>
+          <h3>Результаты поиска ({{ searchResults.length }})</h3>
           <div class="properties-grid">
             <div 
               v-for="property in searchResults" 
@@ -747,9 +809,30 @@ onMounted(() => {
 }
 
 .dashboard-section h2 {
-  color: #2c3e50;
   margin-bottom: 1.5rem;
+  color: #2c3e50;
   font-size: 1.5rem;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.dashboard-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 2px;
+}
+
+.dashboard-section h3 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .user-info {
@@ -785,18 +868,33 @@ onMounted(() => {
 
 .empty-state {
   text-align: center;
-  padding: 3rem;
-  color: #666;
+  padding: 3rem 1rem;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 12px;
+  border: 2px dashed #ced4da;
+}
+
+.empty-state p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
 }
 
 .browse-btn {
-  background: #007aff;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.browse-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 .properties-grid {
@@ -806,108 +904,125 @@ onMounted(() => {
 }
 
 .property-card {
-  border: 1px solid #eee;
-  border-radius: 8px;
+  border: 1px solid #e1e8ed;
+  border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .property-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #667eea;
 }
 
 .property-image {
   position: relative;
   height: 200px;
-  background: #f5f5f5;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .property-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.property-card:hover .property-image img {
+  transform: scale(1.05);
 }
 
 .property-status {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  top: 12px;
+  right: 12px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .property-status.booked {
-  background: #ff9500;
+  background: linear-gradient(135deg, #ff9500, #ff6b35);
   color: white;
 }
 
 .property-status.available {
-  background: #34c759;
+  background: linear-gradient(135deg, #34c759, #30d158);
   color: white;
 }
 
 .property-status.purchased {
-  background: #34c759;
+  background: linear-gradient(135deg, #34c759, #30d158);
   color: white;
 }
 
 .property-status.pending {
-  background: #ff9500;
+  background: linear-gradient(135deg, #ff9500, #ff6b35);
   color: white;
 }
 
 .property-status.approved {
-  background: #34c759;
+  background: linear-gradient(135deg, #34c759, #30d158);
   color: white;
 }
 
 .property-status.rejected {
-  background: #ff3b30;
+  background: linear-gradient(135deg, #ff3b30, #ff453a);
   color: white;
 }
 
 .property-status.active {
-  background: #34c759;
+  background: linear-gradient(135deg, #34c759, #30d158);
   color: white;
 }
 
 .property-status.closed {
-  background: #ff3b30;
+  background: linear-gradient(135deg, #ff3b30, #ff453a);
   color: white;
 }
 
 .property-info {
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
 .property-info h3 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.75rem 0;
   color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .property-address {
-  color: #666;
+  color: #6c757d;
   font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
 }
 
 .property-price {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #007aff;
-  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 0.75rem;
 }
 
 .property-payment {
   font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 0.25rem;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+  font-style: italic;
 }
 
 .property-actions {
@@ -918,52 +1033,66 @@ onMounted(() => {
 }
 
 .action-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
+  font-weight: 600;
+  transition: all 0.3s ease;
   flex: 1;
   min-width: 80px;
+  text-align: center;
 }
 
 .action-btn.primary {
-  background: #007aff;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .action-btn.primary:hover {
-  background: #0056cc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .action-btn.secondary {
-  background: #f5f5f5;
+  background: #f8f9fa;
   color: #2c3e50;
+  border: 2px solid #e1e8ed;
 }
 
 .action-btn.secondary:hover {
-  background: #e5e5e5;
+  background: #e9ecef;
+  border-color: #ced4da;
+  transform: translateY(-1px);
 }
 
 .action-btn.danger {
-  background: #ff3b30;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
   color: white;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
 }
 
 .action-btn.danger:hover {
-  background: #d70015;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
 }
 
-.search-filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+/* Форма поиска */
+.search-form {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 2rem;
   margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #f8f9fa;
-  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.search-filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .filter-group {
@@ -972,51 +1101,210 @@ onMounted(() => {
   gap: 0.5rem;
 }
 
-.filter-group label {
+.filter-label {
   font-weight: 600;
-  color: #2c3e50;
+  color: white;
   font-size: 0.9rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.filter-group input,
-.filter-group select {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.filter-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  color: #2c3e50;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.filter-input::placeholder {
+  color: #7f8c8d;
+}
+
+/* Диапазоны цен и площади */
+.price-range,
+.area-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.price-input,
+.area-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.price-separator,
+.area-separator {
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.area-unit {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+/* Фильтр по комнатам */
+.rooms-filter {
+  margin-bottom: 2rem;
+}
+
+.rooms-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.room-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  min-width: 60px;
+  text-align: center;
+}
+
+.room-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.room-btn.active {
+  background: white;
+  color: #667eea;
+  border-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Кнопки действий */
+.search-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .search-btn,
 .clear-btn {
-  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  font-weight: 500;
-  align-self: end;
+  transition: all 0.3s ease;
+  min-width: 160px;
+  justify-content: center;
 }
 
 .search-btn {
-  background: #007aff;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
   color: white;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
 }
 
 .search-btn:hover {
-  background: #0056cc;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
 }
 
 .clear-btn {
-  background: #f5f5f5;
-  color: #2c3e50;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
 }
 
 .clear-btn:hover {
-  background: #e5e5e5;
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
 }
 
+.search-icon,
+.clear-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Результаты поиска */
 .search-results h3 {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .search-form {
+    padding: 1.5rem;
+  }
+  
+  .search-filters-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .rooms-buttons {
+    justify-content: center;
+  }
+  
+  .search-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .search-btn,
+  .clear-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .price-range,
+  .area-range {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .price-separator,
+  .area-separator {
+    display: none;
+  }
+  
+  .area-unit {
+    align-self: flex-end;
+    margin-top: -2.5rem;
+    margin-right: 0.5rem;
+  }
 }
 
 .loading-indicator {
@@ -1039,40 +1327,54 @@ onMounted(() => {
   100% { transform: rotate(360deg); }
 }
 
+/* Модальные окна */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
 .modal-content {
   background: white;
+  border-radius: 16px;
   padding: 2rem;
-  border-radius: 12px;
   max-width: 500px;
   width: 90%;
-  max-height: 80vh;
+  max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
 }
 
-.mortgage-modal {
-  max-width: 600px;
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal-content h3 {
-  margin-bottom: 1.5rem;
+  margin: 0 0 1.5rem 0;
   color: #2c3e50;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
@@ -1080,92 +1382,72 @@ onMounted(() => {
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: #2c3e50;
+  font-size: 0.9rem;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #007aff;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-group textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 80px;
 }
 
 .modal-actions {
   display: flex;
   gap: 1rem;
+  justify-content: center;
   margin-top: 2rem;
-  justify-content: flex-end;
 }
 
-.btn-primary,
-.btn-secondary {
+.btn {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  min-width: 120px;
 }
 
-.btn-primary {
-  background: #007aff;
+.btn.primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.btn-primary:hover {
-  background: #0056cc;
+.btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
-.btn-secondary {
-  background: #f5f5f5;
+.btn.secondary {
+  background: #f8f9fa;
   color: #2c3e50;
+  border: 2px solid #e1e8ed;
 }
 
-.btn-secondary:hover {
-  background: #e5e5e5;
-}
-
-@media (max-width: 768px) {
-  .dashboard-container {
-    padding: 1rem;
-  }
-  
-  .dashboard-header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
-  }
-  
-  .header-actions {
-    justify-content: center;
-  }
-  
-  .properties-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .search-filters {
-    grid-template-columns: 1fr;
-  }
-  
-  .modal-content {
-    margin: 1rem;
-    min-width: auto;
-  }
+.btn.secondary:hover {
+  background: #e9ecef;
+  border-color: #ced4da;
 }
 </style> 
