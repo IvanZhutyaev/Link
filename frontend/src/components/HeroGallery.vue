@@ -1,104 +1,129 @@
 <template>
   <section class="hero-gallery">
-    <div class="hero-container">
-      <div class="hero-content">
-        <h1 class="hero-title">
-          Найдите свой идеальный дом
-        </h1>
-        <p class="hero-subtitle">
-          Более 50 000 новостроек по всей России. Проверенные застройщики, 
-          прозрачные условия и выгодные цены.
-        </p>
-        <div class="hero-filters">
-          <!-- Фильтр Город -->
-          <div class="filter-dropdown" @click="toggleDropdown('city')">
-            <button class="filter-btn">
-              {{ selectedCity || 'Город' }}
-              <span class="dropdown-arrow">▼</span>
-            </button>
-            <div class="dropdown-menu" v-if="activeDropdown === 'city'">
-              <div 
-                v-for="city in cities" 
-                :key="city"
-                class="dropdown-item"
-                @click="selectCity(city)"
-              >
-                {{ city }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Фильтр Тип -->
-          <div class="filter-dropdown" @click="toggleDropdown('type')">
-            <button class="filter-btn">
-              {{ selectedType || 'Тип' }}
-              <span class="dropdown-arrow">▼</span>
-            </button>
-            <div class="dropdown-menu" v-if="activeDropdown === 'type'">
-              <div 
-                v-for="type in propertyTypes" 
-                :key="type"
-                class="dropdown-item"
-                @click="selectType(type)"
-              >
-                {{ type }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Фильтр Сроки -->
-          <div class="filter-dropdown" @click="toggleDropdown('timeline')">
-            <button class="filter-btn">
-              {{ selectedTimeline || 'Сроки' }}
-              <span class="dropdown-arrow">▼</span>
-            </button>
-            <div class="dropdown-menu" v-if="activeDropdown === 'timeline'">
-              <div 
-                v-for="timeline in timelines" 
-                :key="timeline"
-                class="dropdown-item"
-                @click="selectTimeline(timeline)"
-              >
-                {{ timeline }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Фильтр Статус -->
-          <div class="filter-dropdown" @click="toggleDropdown('status')">
-            <button class="filter-btn">
-              {{ selectedStatus || 'Статус' }}
-              <span class="dropdown-arrow">▼</span>
-            </button>
-            <div class="dropdown-menu" v-if="activeDropdown === 'status'">
-              <div 
-                v-for="status in statuses" 
-                :key="status"
-                class="dropdown-item"
-                @click="selectStatus(status)"
-              >
-                {{ status }}
-              </div>
-            </div>
-          </div>
-
-          <button class="search-btn" @click="handleSearch">Найти</button>
+    <!-- LogoSlider сверху по всей ширине -->
+    <div class="logo-slider-container">
+      <div class="logo-track">
+        <!-- Первый набор логотипов -->
+        <div
+          v-for="(logo, index) in logos"
+          :key="`first-${index}`"
+          class="logo-item"
+        >
+          <img :src="logo" alt="Logo" />
+        </div>
+        <!-- Дублированный набор для бесконечной прокрутки -->
+        <div
+          v-for="(logo, index) in logos"
+          :key="`second-${index}`"
+          class="logo-item"
+        >
+          <img :src="logo" alt="Logo" />
         </div>
       </div>
-      
-      <div class="gallery">
-        <div class="gallery-grid">
-          <div 
-            v-for="(item, index) in galleryItems" 
-            :key="index"
-            class="gallery-item"
-            :class="`gallery-item-${index + 1}`"
-            @click="handleGalleryItemClick(item)"
-          >
-            <div class="item-overlay">
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.description }}</p>
-              <span class="item-price">{{ item.price }}</span>
+    </div>
+    
+    <!-- Основной контент по центру -->
+    <div class="hero-main-content">
+      <div class="hero-container">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            Найдите свой идеальный дом
+          </h1>
+          <p class="hero-subtitle">
+            Более 50 000 новостроек по всей России. Проверенные застройщики, 
+            прозрачные условия и выгодные цены.
+          </p>
+          <div class="hero-filters">
+            <!-- Фильтр Город -->
+            <div class="filter-dropdown" @click="toggleDropdown('city')">
+              <button class="filter-btn">
+                {{ selectedCity || 'Город' }}
+                <span class="dropdown-arrow">▼</span>
+              </button>
+              <div class="dropdown-menu" v-if="activeDropdown === 'city'">
+                <div 
+                  v-for="city in cities" 
+                  :key="city"
+                  class="dropdown-item"
+                  @click="selectCity(city)"
+                >
+                  {{ city }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Фильтр Тип -->
+            <div class="filter-dropdown" @click="toggleDropdown('type')">
+              <button class="filter-btn">
+                {{ selectedType || 'Тип' }}
+                <span class="dropdown-arrow">▼</span>
+              </button>
+              <div class="dropdown-menu" v-if="activeDropdown === 'type'">
+                <div 
+                  v-for="type in propertyTypes" 
+                  :key="type"
+                  class="dropdown-item"
+                  @click="selectType(type)"
+                >
+                  {{ type }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Фильтр Сроки -->
+            <div class="filter-dropdown" @click="toggleDropdown('timeline')">
+              <button class="filter-btn">
+                {{ selectedTimeline || 'Сроки' }}
+                <span class="dropdown-arrow">▼</span>
+              </button>
+              <div class="dropdown-menu" v-if="activeDropdown === 'timeline'">
+                <div 
+                  v-for="timeline in timelines" 
+                  :key="timeline"
+                  class="dropdown-item"
+                  @click="selectTimeline(timeline)"
+                >
+                  {{ timeline }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Фильтр Статус -->
+            <div class="filter-dropdown" @click="toggleDropdown('status')">
+              <button class="filter-btn">
+                {{ selectedStatus || 'Статус' }}
+                <span class="dropdown-arrow">▼</span>
+              </button>
+              <div class="dropdown-menu" v-if="activeDropdown === 'status'">
+                <div 
+                  v-for="status in statuses" 
+                  :key="status"
+                  class="dropdown-item"
+                  @click="selectStatus(status)"
+                >
+                  {{ status }}
+                </div>
+              </div>
+            </div>
+
+            <button class="search-btn" @click="handleSearch">Найти</button>
+          </div>
+        </div>
+        
+        <div class="gallery">
+          <div class="gallery-grid">
+            <div 
+              v-for="(item, index) in galleryItems" 
+              :key="index"
+              class="gallery-item"
+              :class="`gallery-item-${index + 1}`"
+              @click="handleGalleryItemClick(item)"
+            >
+              <div class="item-overlay">
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.description }}</p>
+                <span class="item-price">{{ item.price }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -116,6 +141,26 @@ const emit = defineEmits(['search-complexes'])
 
 const currentSlide = ref(0)
 const galleryItems = ref([])
+
+// Логотипы застройщиков
+const logos = [
+  '/logos/art.svg',
+  '/logos/ava.svg',
+  '/logos/bel_Development.svg',
+  '/logos/deco.svg',
+  '/logos/neometria.svg',
+  '/logos/developmentYoug.svg',
+  '/logos/dogma.svg',
+  '/logos/evropea.svg',
+  '/logos/insiti.svg',
+  '/logos/kub.svg',
+  '/logos/lendex.svg',
+  '/logos/livingston.svg',
+  '/logos/SSK.svg',
+  '/logos/tochno.svg',
+  '/logos/pobeda.svg',
+  '/logos/semiya.svg',
+]
 
 // Состояние фильтров
 const activeDropdown = ref(null)
@@ -303,7 +348,14 @@ onUnmounted(() => {
   background: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
+}
+
+.hero-main-content {
+  flex: 1;
+  display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .hero-container {
@@ -553,5 +605,71 @@ onUnmounted(() => {
   .gallery-grid {
     height: 300px;
   }
+}
+
+/* LogoSlider стили */
+.logo-slider-container {
+  width: 100%;
+  overflow: hidden;
+  padding: 20px;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-track {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  min-width: max-content;
+  transition: all 0.3s ease;
+  padding: 0 20px;
+  animation: scroll 30s linear infinite;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-item {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  filter: brightness(0) invert(1);
+  flex-shrink: 0;
+}
+
+.logo-item img {
+  height: 50px;
+  width: auto;
+  transition: transform 0.3s ease;
+  opacity: 0.8;
+}
+
+.logo-item:hover img {
+  transform: scale(1.1);
+  opacity: 1;
+  animation-play-state: paused;
+}
+
+/* Скрываем скроллбар для красоты */
+.logo-slider-container::-webkit-scrollbar {
+  display: none;
+}
+
+.logo-slider-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style> 
