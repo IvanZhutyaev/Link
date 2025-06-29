@@ -11,10 +11,18 @@
         >
           <img :src="logo" alt="Logo" />
         </div>
-        <!-- Дублированный набор для бесконечной прокрутки -->
+        <!-- Второй набор для плавного перехода -->
         <div
           v-for="(logo, index) in logos"
           :key="`second-${index}`"
+          class="logo-item"
+        >
+          <img :src="logo" alt="Logo" />
+        </div>
+        <!-- Третий набор для полной бесконечности -->
+        <div
+          v-for="(logo, index) in logos"
+          :key="`third-${index}`"
           class="logo-item"
         >
           <img :src="logo" alt="Logo" />
@@ -631,7 +639,7 @@ onUnmounted(() => {
   min-width: max-content;
   transition: all 0.3s ease;
   padding: 0 20px;
-  animation: scroll 30s linear infinite;
+  animation: scroll 60s linear infinite;
 }
 
 @keyframes scroll {
@@ -639,7 +647,7 @@ onUnmounted(() => {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(calc(-33.333% - 40px));
   }
 }
 
