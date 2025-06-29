@@ -1,0 +1,25 @@
+@import './base.css';
+
+#app {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  min-height: 100vh;
+}
+
+/* Убираем старые стили, которые конфликтуют с новым дизайном */
+a,
+.green {
+  text-decoration: none;
+  color: #007aff;
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: rgba(0, 122, 255, 0.1);
+  }
+}
+
+/* Убираем старые медиа-запросы, которые конфликтуют */

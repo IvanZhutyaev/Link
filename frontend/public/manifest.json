@@ -1,0 +1,16 @@
+{
+  "name": "LINK - Поиск недвижимости",
+  "short_name": "LINK",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007aff",
+  "description": "Поиск новостроек и недвижимости в России",
+  "icons": [
+    {
+      "src": "/linkicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+} 
