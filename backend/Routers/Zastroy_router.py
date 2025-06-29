@@ -18,7 +18,7 @@ from backend.Cruds.Law_crud import (
     delete_zastroy, 
     check_zastroy_credentials
 )
-from Database.DB_connection import get_db
+from backend.Database.DB_connection import get_db
 
 router = APIRouter(prefix="/zastroys", tags=["Застройщики"])
 

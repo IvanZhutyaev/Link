@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
-from Models.All_models import Law_Face
+from backend.Models.All_models import Law_Face
 from passlib.context import CryptContext
 
-from Schemas.Zastroy_schema import ZastroyModel
+from backend.Schemas.Zastroy_schema import ZastroyModel
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

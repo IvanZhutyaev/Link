@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 
-from Cruds.DeveloperRating_crud import (
+from backend.Cruds.DeveloperRating_crud import (
     get_developer_rating,
     create_developer_rating,
     update_developer_rating,
@@ -10,14 +10,14 @@ from Cruds.DeveloperRating_crud import (
     get_developer_stats,
     get_top_developers
 )
-from Schemas.DeveloperRating_schema import (
+from backend.Schemas.DeveloperRating_schema import (
     DeveloperRatingCreate,
     DeveloperRatingUpdate,
     DeveloperRatingResponse,
     DeveloperStatsResponse,
     TopDeveloperResponse
 )
-from Database.DB_connection import get_db
+from backend.Database.DB_connection import get_db
 
 router = APIRouter(prefix="/developer-ratings", tags=["Рейтинг застройщиков"])
 
