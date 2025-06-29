@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 import random
 
-from Database.DB_connection import base, engine
+from backend.Database.DB_connection import base, engine
 
 
 class Law_Face(base):
