@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { api } from '../utils/api.js'
+import { complexAPI, developerRatingAPI } from '../utils/api.js'
 
 export default {
   name: 'ComplexSearch',
@@ -96,18 +96,16 @@ export default {
     async searchComplexes() {
       this.loading = true
       try {
-        const params = new URLSearchParams()
-        if (this.searchFilters.city) params.append('city', this.searchFilters.city)
-        if (this.searchFilters.housing_class) params.append('housing_class', this.searchFilters.housing_class)
-        
-        const response = await api.get(`/zastroys/residential-complexes/?${params}`)
-        const complexes = response.data
+        const complexes = await complexAPI.getAllComplexes({
+          city: this.searchFilters.city,
+          housing_class: this.searchFilters.housing_class
+        })
         
         // Получаем рейтинги застройщиков для каждого ЖК
         const complexesWithRatings = await Promise.all(
           complexes.map(async (complex) => {
             try {
-              const ratingResponse = await api.get(`/developer-ratings/${complex.zastroy_id}`)
+              const ratingResponse = await developerRatingAPI.getRating(complex.zastroy_id)
               return {
                 ...complex,
                 developer_rating: ratingResponse.rating

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 
 from Models.All_models import ResidentialComplex
 from Schemas.RC_schema import ResidentialComplexCreate
@@ -37,9 +37,25 @@ def get_residential_complexes_by_developer(db: Session, developer_name: str, ski
     ).offset(skip).limit(limit).all()
 
 
-def get_all_residential_complexes(db: Session, skip: int = 0, limit: int = 100):
-    """Получить все жилые комплексы"""
-    return db.query(ResidentialComplex).offset(skip).limit(limit).all()
+def get_all_residential_complexes(db: Session, skip: int = 0, limit: int = 100, city: str = None, housing_class: str = None):
+    """Получить все жилые комплексы с возможностью фильтрации"""
+    query = db.query(ResidentialComplex)
+    
+    # Применяем фильтры
+    if city:
+        query = query.filter(ResidentialComplex.city.ilike(f"%{city}%"))
+    
+    if housing_class:
+        # Нормализуем класс жилья для поиска
+        normalized_class = housing_class.lower().strip()
+        query = query.filter(
+            or_(
+                ResidentialComplex.housing_class.ilike(f"%{normalized_class}%"),
+                ResidentialComplex.housing_class.ilike(f"%{normalized_class.capitalize()}%")
+            )
+        )
+    
+    return query.offset(skip).limit(limit).all()
 
 
 def get_residential_complex(db: Session, complex_id: int):

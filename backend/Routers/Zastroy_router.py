@@ -139,7 +139,7 @@ def get_residential_complexes(
     if zastroy_id:
         return get_residential_complexes_by_zastroy_id(db, zastroy_id, skip=skip, limit=limit)
     else:
-        return get_all_residential_complexes(db, skip=skip, limit=limit)
+        return get_all_residential_complexes(db, skip=skip, limit=limit, city=city, housing_class=housing_class)
 
 @router.get("/residential-complexes/{complex_id}", response_model=ResidentialComplexResponse)
 def get_residential_complex_detail(complex_id: int, db: Session = Depends(get_db)):
