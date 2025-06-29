@@ -67,4 +67,4 @@ const logos = [
 .logo-item:hover img {
   transform: scale(1.2);
 }
-</style>
+</style> 
