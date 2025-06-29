@@ -35,7 +35,7 @@
         v-for="complex in complexes" 
         :key="complex.id"
         class="complex-card"
-        @click="selectComplex(complex)"
+        @click="openTourModal(complex)"
       >
         <div class="complex-image">
           <img :src="complex.avatar_url || '/default-complex.jpg'" :alt="complex.name" />
@@ -71,6 +71,25 @@
         </div>
       </div>
     </div>
+
+    <!-- Модальное окно для 3D-тура -->
+    <div v-if="showTourModal" class="modal-overlay" @click.self="closeTourModal">
+      <div class="modal-content">
+        <button class="modal-close" @click="closeTourModal">×</button>
+        <template v-if="selectedComplex && selectedComplex.avaline_url">
+          <iframe
+            :src="selectedComplex.avaline_url"
+            width="100%"
+            height="500px"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </template>
+        <template v-else>
+          <p>3D-тур для этого ЖК пока не добавлен.</p>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -86,7 +105,9 @@ export default {
       searchFilters: {
         city: '',
         housing_class: ''
-      }
+      },
+      showTourModal: false,
+      selectedComplex: null
     }
   },
   async mounted() {
@@ -129,8 +150,14 @@ export default {
       }
     },
     
-    selectComplex(complex) {
-      this.$emit('complex-selected', complex)
+    openTourModal(complex) {
+      this.selectedComplex = complex
+      this.showTourModal = true
+    },
+    
+    closeTourModal() {
+      this.showTourModal = false
+      this.selectedComplex = null
     },
     
     getTypeClass(housingClass) {
@@ -401,5 +428,37 @@ export default {
   .filter-select {
     min-width: auto;
   }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 800px;
+  width: 90vw;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #888;
 }
 </style> 

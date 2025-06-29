@@ -12,6 +12,7 @@ class ResidentialComplexCreate(BaseModel):
     housing_class: Optional[str] = None        # Класс (необязательное)
     status: Optional[str] = None               # Статус (необязательное)
     avatar_url: Optional[str] = None           # Ссылка на аватар (необязательное)
+    avaline_url: Optional[str] = None          # Ссылка на 3D-тур AvaLine (необязательное)
     
     class Config:
         from_attributes = True  # Работает с ORM (для FastAPI >= 2.0)

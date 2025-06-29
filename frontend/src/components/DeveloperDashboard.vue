@@ -313,6 +313,14 @@
             <option value="Планируется">Планируется</option>
           </select>
         </div>
+        <div class="form-group">
+          <label>Ссылка на 3D-тур AvaLine:</label>
+          <input v-model="newComplex.avaline_url" type="url" placeholder="https://avaline.ru/tour/..." />
+        </div>
+        <div class="form-group">
+          <label>Ссылка на изображение ЖК:</label>
+          <input v-model="newComplex.avatar_url" type="url" placeholder="https://example.com/image.jpg" />
+        </div>
         <div class="modal-actions">
           <button class="btn secondary" @click="closeAddComplexModal">Отмена</button>
           <button class="btn primary" @click="addComplex">Добавить</button>
@@ -430,6 +438,7 @@ const newComplex = reactive({
   commissioning_date: '',
   housing_class: '',
   status: '',
+  avaline_url: '',
   avatar_url: ''
 })
 
@@ -641,6 +650,11 @@ const addComplex = async () => {
     })
     await loadDeveloperData()
     showAddComplexModal.value = false
+    
+    // Очищаем форму
+    Object.keys(newComplex).forEach(key => newComplex[key] = '')
+    
+    alert('ЖК успешно добавлен!')
   } catch (e) {
     alert('Ошибка при добавлении ЖК: ' + (e.message || 'Неизвестная ошибка'))
   }

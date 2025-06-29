@@ -2,8 +2,10 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from backend.Database.DB_connection import engine
-from sqlalchemy import text
+from Database.DB_connection import engine
+from sqlalchemy import inspect, text
+from Models.All_models import ResidentialComplex
+from sqlalchemy.orm import Session
 
 def fix_database():
     """Исправляет проблемы с базой данных"""
@@ -67,5 +69,22 @@ def fix_database():
         print(f"Ошибка при исправлении базы данных: {e}")
         print(f"Тип ошибки: {type(e)}")
 
+def add_avaline_url_column():
+    with engine.connect() as conn:
+        # Проверяем, есть ли уже столбец
+        result = conn.execute(text("""
+            SELECT column_name FROM information_schema.columns
+            WHERE table_name='residential_complexes' AND column_name='avaline_url'
+        """))
+        if result.fetchone() is None:
+            print("Добавляю столбец avaline_url в residential_complexes...")
+            conn.execute(text("""
+                ALTER TABLE residential_complexes ADD COLUMN avaline_url VARCHAR;
+            """))
+            print("Готово!")
+        else:
+            print("Столбец avaline_url уже существует.")
+
 if __name__ == "__main__":
-    fix_database() 
+    fix_database()
+    add_avaline_url_column() 

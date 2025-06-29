@@ -15,7 +15,8 @@ def create_residential_complex(db: Session, complex_data: ResidentialComplexCrea
         commissioning_date=complex_data.commissioning_date,
         housing_class=complex_data.housing_class,
         status=complex_data.status,
-        avatar_url=complex_data.avatar_url
+        avatar_url=complex_data.avatar_url,
+        avaline_url=complex_data.avaline_url
     )
     db.add(db_complex)
     db.commit()

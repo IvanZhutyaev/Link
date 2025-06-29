@@ -167,6 +167,7 @@ class ResidentialComplex(base):
     housing_class = Column(String)                    # Класс (эконом, комфорт, бизнес)
     status = Column(String)                           # Статус дома (строится, сдан, планируется)
     avatar_url = Column(String)                       # Ссылка на аватар
+    avaline_url = Column(String)                      # Ссылка на 3D-тур AvaLine
     rating = Column(Float, nullable=True, default=0.0)  # Рейтинг ЖК
     rating_count = Column(Integer, nullable=True, default=0)  # Количество оценок
     
