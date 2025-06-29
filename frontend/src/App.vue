@@ -7,6 +7,7 @@ import ComplexSearch from './components/ComplexSearch.vue'
 import UserDashboard from './components/UserDashboard.vue'
 import DeveloperDashboard from './components/DeveloperDashboard.vue'
 import PromotionBlock from './components/PromotionBlock.vue'
+import TopDevelopers from './components/TopDevelopers.vue'
 import MapYandex from './components/MapYandex.vue'
 import ChatAssistant from './components/ChatAssistant.vue'
 
@@ -104,6 +105,12 @@ const handleComplexSelected = (complex) => {
   selectedComplex.value = complex
   // Можно добавить дополнительную логику при выборе ЖК
 }
+
+const handleDeveloperSelected = (developerId) => {
+  // Можно добавить логику для перехода к странице застройщика
+  console.log('Выбран застройщик:', developerId)
+  analytics.sendEvent(developerId, "developer_selected")
+}
 </script>
 
 <template>
@@ -119,6 +126,7 @@ const handleComplexSelected = (complex) => {
       />
       <HeroGallery @search-complexes="showComplexSearch" />
       <PromotionBlock />
+      <TopDevelopers @developer-selected="handleDeveloperSelected" />
       <MapYandex />
     </div>
 

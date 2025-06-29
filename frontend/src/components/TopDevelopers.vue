@@ -110,8 +110,8 @@ export default {
     },
     
     viewDeveloper(developerId) {
-      // Переход к странице застройщика
-      this.$router.push(`/developer/${developerId}`)
+      // Эмитим событие для перехода к застройщику
+      this.$emit('developer-selected', developerId)
     }
   }
 }
