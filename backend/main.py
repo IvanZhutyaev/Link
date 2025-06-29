@@ -1,8 +1,12 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.Routers import Zastroy_router, User_router, Property_router, Analytics_router, Chat_router, DeveloperRating_router
-from backend.Database.DB_connection import create_tables
+from .Routers import Zastroy_router, User_router, Property_router, Analytics_router, Chat_router, DeveloperRating_router
+from .Database.DB_connection import create_tables
 
 app = FastAPI()
 

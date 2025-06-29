@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from backend.Models.All_models import DeveloperRating, Law_Face, Property, ResidentialComplex
+from ..Models.All_models import DeveloperRating, Law_Face, Property, ResidentialComplex
 
 
 def get_developer_rating(db: Session, law_face_id: int):

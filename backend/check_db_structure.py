@@ -1,6 +1,6 @@
-from Database.DB_connection import engine, get_db
+from .Database.DB_connection import engine, get_db
 from sqlalchemy import inspect, text
-from Models.All_models import ResidentialComplex
+from .Models.All_models import ResidentialComplex
 from sqlalchemy.orm import Session
 
 def check_properties_table():

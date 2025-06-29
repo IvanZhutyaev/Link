@@ -2,8 +2,8 @@ from sqlalchemy import Column, Integer, String, ForeignKey, BOOLEAN, false, Date
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import random
-
-from backend.Database.DB_connection import base, engine
+from sqlalchemy.ext.declarative import declarative_base
+from .Database.DB_connection import base, engine
 
 
 class Law_Face(base):

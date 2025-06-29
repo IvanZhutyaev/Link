@@ -1,18 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from starlette import status
-
-from backend.Cruds.Law_crud import check_zastroy_credentials
-from backend.Schemas.User_schema import UserModel, UserResponse, UserLogin
-from backend.Cruds.User_crud import (
+from typing import List
+from ..Cruds.Law_crud import check_zastroy_credentials
+from ..Schemas.User_schema import UserModel, UserResponse, UserLogin
+from ..Cruds.User_crud import (
     create_user,
     get_user,
     get_users,
     update_user,
-    delete_user, check_user_credentials
+    delete_user,
+    check_user_credentials,
+    get_user_by_phone
 )
-from backend.Database.DB_connection import get_db
-from backend.Schemas.Zastroy_schema import ZastroyLogin
+from ..Database.DB_connection import get_db
+from ..Schemas.Zastroy_schema import ZastroyLogin
 
 router = APIRouter(prefix="/users", tags=["Пользователи"])
 

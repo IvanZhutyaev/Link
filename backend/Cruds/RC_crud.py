@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
+from sqlalchemy.exc import IntegrityError
 
-from backend.Models.All_models import ResidentialComplex
-from backend.Schemas.RC_schema import ResidentialComplexCreate
+from ..Models.All_models import ResidentialComplex
+from ..Schemas.RC_schema import ResidentialComplexCreate
 
 
 def create_residential_complex(db: Session, complex_data: ResidentialComplexCreate):

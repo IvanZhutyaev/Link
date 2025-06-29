@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from backend.Schemas.DeveloperRating_schema import DeveloperRatingResponse
+from .DeveloperRating_schema import DeveloperRatingResponse
 
 
 class ZastroyModel(BaseModel):

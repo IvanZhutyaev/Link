@@ -1,8 +1,9 @@
+from ..Models.All_models import Law_Face, User
 from sqlalchemy.orm import Session
-from backend.Models.All_models import Law_Face, User
+from sqlalchemy.exc import IntegrityError
 from passlib.context import CryptContext
 
-from backend.Schemas.User_schema import UserModel
+from ..Schemas.User_schema import UserModel
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
