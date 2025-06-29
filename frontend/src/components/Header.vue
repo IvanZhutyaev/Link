@@ -3,7 +3,7 @@
     <div class="header-container">
       <div class="logo" @click="goHome">
         <img src="@/assets/logo.svg" alt="Логотип" class="logo-img" />
-        <span class="logo-text">Наш.Дом</span>
+        
       </div>
       
       <nav class="nav">
