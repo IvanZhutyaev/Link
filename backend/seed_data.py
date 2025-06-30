@@ -1,14 +1,14 @@
 from sqlalchemy.orm import Session
-from .Database.DB_connection import SessionLocal, engine
-from .Models.All_models import User, Law_Face, Property, Booking, ResidentialComplex
-from .Cruds.User_crud import create_user
-from .Cruds.Law_crud import create_zastroy
-from .Cruds.Property_crud import create_property
-from .Cruds.RC_crud import create_residential_complex
-from .Schemas.User_schema import UserModel
-from .Schemas.Zastroy_schema import ZastroyModel
-from .Schemas.Property_schema import PropertyModel
-from .Schemas.RC_schema import ResidentialComplexCreate
+from backend.Database.DB_connection import SessionLocal, engine
+from backend.Models.All_models import User, Law_Face, Property, Booking, ResidentialComplex
+from backend.Cruds.User_crud import create_user
+from backend.Cruds.Law_crud import create_zastroy
+from backend.Cruds.Property_crud import create_property
+from backend.Cruds.RC_crud import create_residential_complex
+from backend.Schemas.User_schema import UserModel
+from backend.Schemas.Zastroy_schema import ZastroyModel
+from backend.Schemas.Property_schema import PropertyModel
+from backend.Schemas.RC_schema import ResidentialComplexCreate
 
 
 def seed_database():

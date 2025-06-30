@@ -1,4 +1,4 @@
-from ..Models.All_models import Law_Face
+from backend.Models.All_models import Law_Face
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from passlib.context import CryptContext

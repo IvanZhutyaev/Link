@@ -1,8 +1,8 @@
 from sqlalchemy import text
-from .Database.DB_connection import engine, base, get_db
-from .Models.All_models import DeveloperRating
-from .Cruds.DeveloperRating_crud import create_developer_rating, calculate_developer_rating, update_developer_rating
-from .Cruds.Law_crud import get_zastroys
+from backend.Database.DB_connection import engine, base, get_db
+from backend.Models.All_models import DeveloperRating
+from backend.Cruds.DeveloperRating_crud import create_developer_rating, calculate_developer_rating, update_developer_rating
+from backend.Cruds.Law_crud import get_zastroys
 
 def update_database_with_ratings():
     """Обновить базу данных, добавив таблицу рейтингов застройщиков"""

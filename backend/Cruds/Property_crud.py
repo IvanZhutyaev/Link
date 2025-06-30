@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from ..Models.All_models import Property, Booking, User, Purchase, Mortgage
-from ..Schemas.Property_schema import (
+from backend.Models.All_models import Property, Booking, User, Purchase, Mortgage
+from backend.Schemas.Property_schema import (
     PropertyModel, PropertySearch, BookingModel, 
     PurchaseModel, MortgageModel, MortgageCalculationModel
 )

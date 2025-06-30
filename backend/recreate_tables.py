@@ -3,8 +3,8 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from sqlalchemy import create_engine, text
-from .Database.DB_connection import engine, base
-from .Models.All_models import *
+from backend.Database.DB_connection import engine, base
+from backend.Models.All_models import *
 
 def recreate_tables():
     """Пересоздает все таблицы в базе данных"""

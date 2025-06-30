@@ -4,14 +4,14 @@ from starlette import status
 from typing import List, Optional
 from datetime import datetime
 
-from ..Cruds.RC_crud import create_residential_complex, get_residential_complexes_by_developer, get_all_residential_complexes, get_residential_complexes_by_zastroy_id, get_residential_complex, rate_residential_complex
-from ..Cruds.Property_crud import get_properties_by_complex, rate_property, mark_property_error
-from ..Cruds.DeveloperRating_crud import get_developer_rating, get_developer_stats, calculate_developer_rating, update_developer_rating
-from ..Schemas.RC_schema import ResidentialComplexCreate, ResidentialComplexResponse, RatingModel
-from ..Schemas.Property_schema import PropertyResponse
-from ..Schemas.Zastroy_schema import ZastroyModel, ZastroyResponse, ZastroyLogin, ZastroyWithStatsResponse
-from ..Schemas.DeveloperRating_schema import DeveloperRatingResponse, DeveloperStatsResponse
-from ..Cruds.Law_crud import (
+from backend.Cruds.RC_crud import create_residential_complex, get_residential_complexes_by_developer, get_all_residential_complexes, get_residential_complexes_by_zastroy_id, get_residential_complex, rate_residential_complex
+from backend.Cruds.Property_crud import get_properties_by_complex, rate_property, mark_property_error
+from backend.Cruds.DeveloperRating_crud import get_developer_rating, get_developer_stats, calculate_developer_rating, update_developer_rating
+from backend.Schemas.RC_schema import ResidentialComplexCreate, ResidentialComplexResponse, RatingModel
+from backend.Schemas.Property_schema import PropertyResponse
+from backend.Schemas.Zastroy_schema import ZastroyModel, ZastroyResponse, ZastroyLogin, ZastroyWithStatsResponse
+from backend.Schemas.DeveloperRating_schema import DeveloperRatingResponse, DeveloperStatsResponse
+from backend.Cruds.Law_crud import (
     create_zastroy,
     update_zastroy,
     delete_zastroy,

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
-from ..Models.All_models import ApartmentEvent, Property
-from ..Schemas.Analytics_schema import EventCreate
+from backend.Models.All_models import ApartmentEvent, Property
+from backend.Schemas.Analytics_schema import EventCreate
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
 

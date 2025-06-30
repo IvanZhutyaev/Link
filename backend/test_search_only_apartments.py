@@ -8,10 +8,10 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from sqlalchemy.orm import Session
-from .Database.DB_connection import get_db
-from .Models.All_models import Property, ResidentialComplex, Law_Face
-from .Cruds.Property_crud import search_properties, get_properties
-from .Schemas.Property_schema import PropertySearch
+from backend.Database.DB_connection import get_db
+from backend.Models.All_models import Property, ResidentialComplex, Law_Face
+from backend.Cruds.Property_crud import search_properties, get_properties
+from backend.Schemas.Property_schema import PropertySearch
 
 def test_search_only_apartments():
     """Тест, что поиск по умолчанию показывает только квартиры"""

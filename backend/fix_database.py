@@ -2,9 +2,9 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from .Database.DB_connection import engine
+from backend.Database.DB_connection import engine
 from sqlalchemy import inspect, text
-from .Models.All_models import ResidentialComplex
+from backend.Models.All_models import ResidentialComplex
 from sqlalchemy.orm import Session
 
 def fix_database():

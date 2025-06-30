@@ -9,10 +9,10 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from sqlalchemy.orm import Session
-from .Database.DB_connection import get_db
-from .Models.All_models import Property, ResidentialComplex, Law_Face
-from .Cruds.Property_crud import create_booking
-from .Schemas.Property_schema import BookingModel
+from backend.Database.DB_connection import get_db
+from backend.Models.All_models import Property, ResidentialComplex, Law_Face
+from backend.Cruds.Property_crud import create_booking
+from backend.Schemas.Property_schema import BookingModel
 
 def test_booking_restrictions():
     """Тест ограничений бронирования"""

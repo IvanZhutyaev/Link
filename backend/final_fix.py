@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from .Database.DB_connection import engine
+from backend.Database.DB_connection import engine
 from sqlalchemy import text
 import subprocess
 import time

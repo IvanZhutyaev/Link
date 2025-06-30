@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from ..Schemas.Property_schema import (
+from backend.Schemas.Property_schema import (
     PropertyModel, 
     PropertyResponse, 
     PropertySearch, 
@@ -16,7 +16,7 @@ from ..Schemas.Property_schema import (
     MortgageCalculationResponse,
     RatingModel
 )
-from ..Cruds.Property_crud import (
+from backend.Cruds.Property_crud import (
     create_property,
     get_properties,
     get_property,
