@@ -1,171 +1,171 @@
-# 🏠 LINK - Система управления недвижимостью
+# 🏠 LINK - Real Estate Management System
 
-Современная веб-платформа для управления недвижимостью с аналитикой, бронированием и личными кабинетами для застройщиков и покупателей.
+A modern web platform for real estate management with analytics, booking, and personal dashboards for developers and buyers.
 
-## 🚀 Возможности
+## 🚀 Features
 
-### Для покупателей:
-- 📋 Просмотр каталога недвижимости
-- 🔍 Поиск и фильтрация объектов
-- 🗺️ Интерактивная карта с объектами
-- 🏠 3D туры по квартирам
-- 📊 Аналитика просмотров
-- 💳 Бронирование и покупка недвижимости
-- 👤 Личный кабинет с бронированиями
+### For buyers:
+- 📋 Browse the real estate catalog
+- 🔍 Search and filter properties
+- 🗺️ Interactive map with properties
+- 🏠 3D apartment tours
+- 📊 View analytics
+- 💳 Booking and purchasing real estate
+- 👤 Personal dashboard with bookings
 
-### Для застройщиков:
-- 🏢 Управление жилыми комплексами
-- 🏠 Добавление и редактирование квартир
-- 📊 Детальная аналитика продаж
-- 👥 Управление бронированиями
-- 📈 Статистика по объектам
-- 🎯 Отслеживание конверсии
+### For developers:
+- 🏢 Manage residential complexes
+- 🏠 Add and edit apartments
+- 📊 Detailed sales analytics
+- 👥 Manage bookings
+- 📈 Property statistics
+- 🎯 Conversion tracking
 
-## 🛠️ Технологии
+## 🛠️ Technologies
 
 ### Backend:
-- **FastAPI** - современный веб-фреймворк
-- **SQLAlchemy** - ORM для работы с базой данных
-- **PostgreSQL** - основная база данных
-- **Pydantic** - валидация данных
-- **Uvicorn** - ASGI сервер
+- **FastAPI** - modern web framework
+- **SQLAlchemy** - ORM for database operations
+- **PostgreSQL** - primary database
+- **Pydantic** - data validation
+- **Uvicorn** - ASGI server
 
 ### Frontend:
-- **Vue.js 3** - прогрессивный JavaScript фреймворк
-- **Vite** - быстрый сборщик
-- **Axios** - HTTP клиент
-- **CSS3** - современные стили
+- **Vue.js 3** - progressive JavaScript framework
+- **Vite** - fast bundler
+- **Axios** - HTTP client
+- **CSS3** - modern styles
 
-## 📦 Установка и запуск
+## 📦 Installation and Launch
 
-### Предварительные требования:
+### Prerequisites:
 - Python 3.11+
 - Node.js 18+
 - PostgreSQL 12+
 - Git
 
-### 1. Клонирование репозитория:
+### 1. Clone the repository:
 ```bash
 git clone https://github.com/IvanZhutyaev/json-state-home.git
 cd json-state-home
 ```
 
-### 2. Настройка Backend:
+### 2. Backend setup:
 
 ```bash
-# Переходим в папку backend
+# Go to the backend folder
 cd backend
 
-# Создаем виртуальное окружение
+# Create a virtual environment
 python -m venv .venv
 
-# Активируем виртуальное окружение
+# Activate the virtual environment
 # Windows:
 .venv\Scripts\activate
 # Linux/Mac:
 source .venv/bin/activate
 
-# Устанавливаем зависимости
+# Install dependencies
 pip install -r ../requirements.txt
 
-# Настраиваем базу данных
+# Set up the database
 python final_fix.py
 
-# Запускаем сервер
+# Start the server
 uvicorn main:app --reload
 ```
 
-### 3. Настройка Frontend:
+### 3. Frontend setup:
 
 ```bash
-# Переходим в папку frontend
+# Go to the frontend folder
 cd frontend
 
-# Устанавливаем зависимости
+# Install dependencies
 npm install
 
-# Запускаем сервер разработки
+# Start the development server
 npm run dev
 ```
 
-### 4. Настройка базы данных:
+### 4. Database setup:
 
-Создайте базу данных PostgreSQL и обновите настройки подключения в `backend/Database/DB_connection.py`:
+Create a PostgreSQL database and update the connection settings in `backend/Database/DB_connection.py`:
 
 ```python
 DATABASE_URL = "postgresql://username:password@localhost:5432/database_name"
 ```
 
-## 🔧 Исправленные проблемы
+## 🔧 Fixed Issues
 
-### ✅ Критические исправления:
-- **Ошибка с ценой**: Исправлен тип поля `price` с `Integer` на `BigInteger` для поддержки больших значений
-- **Проблемы с бронированием**: Исправлены связи между моделями и валидация данных
-- **Аналитика**: Добавлена полная система отслеживания событий
-- **Связи ЖК**: Исправлена связь между застройщиками, ЖК и квартирами
+### ✅ Critical fixes:
+- **Price error**: Fixed the `price` field type from `Integer` to `BigInteger` to support large values
+- **Booking issues**: Fixed relationships between models and data validation
+- **Analytics**: Added a complete event tracking system
+- **Residential complex relationships**: Fixed the relationship between developers, residential complexes, and apartments
 
-### 📁 Новые файлы:
-- `backend/Cruds/Analytics_crud.py` - CRUD для аналитики
-- `backend/Routers/Analytics_router.py` - роуты аналитики
-- `backend/Schemas/Analytics_schema.py` - схемы аналитики
-- `backend/final_fix.py` - скрипт исправления базы данных
-- `frontend/src/components/AnalyticsDashboard.vue` - дашборд аналитики
+### 📁 New files:
+- `backend/Cruds/Analytics_crud.py` - CRUD for analytics
+- `backend/Routers/Analytics_router.py` - analytics routes
+- `backend/Schemas/Analytics_schema.py` - analytics schemas
+- `backend/final_fix.py` - database fix script
+- `frontend/src/components/AnalyticsDashboard.vue` - analytics dashboard
 
 ## 📊 API Endpoints
 
-### Основные эндпоинты:
-- `GET /properties/` - список недвижимости
-- `POST /properties/` - создание недвижимости
-- `GET /zastroys/` - список застройщиков
-- `POST /api/track-event` - отслеживание событий
-- `GET /api/analytics/summary` - сводка аналитики
+### Main endpoints:
+- `GET /properties/` - list of real estate
+- `POST /properties/` - create real estate
+- `GET /zastroys/` - list of developers
+- `POST /api/track-event` - track events
+- `GET /api/analytics/summary` - analytics summary
 
-### Полная документация API:
+### Full API documentation:
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 
-## 🎯 Функциональность
+## 🎯 Functionality
 
-### Аналитика:
-- 📈 Отслеживание просмотров квартир
-- 🕒 Время проведенное на странице
-- 🎯 Конверсия (просмотр → бронирование)
-- 📊 Статистика по застройщикам
-- 🔍 Аналитика поиска и фильтров
+### Analytics:
+- 📈 Apartment view tracking
+- 🕒 Time spent on page
+- 🎯 Conversion (view → booking)
+- 📊 Statistics by developer
+- 🔍 Search and filter analytics
 
-### Управление недвижимостью:
-- 🏢 Создание и управление ЖК
-- 🏠 Добавление квартир в ЖК
-- 💰 Управление ценами
-- 📸 Загрузка изображений
-- 📍 Геолокация объектов
+### Real estate management:
+- 🏢 Create and manage residential complexes
+- 🏠 Add apartments to residential complexes
+- 💰 Price management
+- 📸 Image upload
+- 📍 Property geolocation
 
-### Бронирование:
-- 📅 Система бронирования
-- 💳 Процесс покупки
-- 📧 Уведомления
-- 📊 Статистика продаж
+### Booking:
+- 📅 Booking system
+- 💳 Purchase process
+- 📧 Notifications
+- 📊 Sales statistics
 
-## 🤝 Вклад в проект
+## 🤝 Contributing
 
-1. Форкните репозиторий
-2. Создайте ветку для новой функции (`git checkout -b feature/amazing-feature`)
-3. Зафиксируйте изменения (`git commit -m 'Add amazing feature'`)
-4. Отправьте в ветку (`git push origin feature/amazing-feature`)
-5. Откройте Pull Request
+1. Fork the repository
+2. Create a branch for a new feature (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📝 Лицензия
+## 📝 License
 
-Этот проект лицензирован под MIT License - см. файл [LICENSE](LICENSE) для деталей.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Поддержка
+## 📞 Support
 
-Если у вас есть вопросы или проблемы:
-- Создайте Issue в GitHub
-- Опишите проблему подробно
-- Приложите логи ошибок
+If you have questions or issues:
+- Create an Issue on GitHub
+- Describe the problem in detail
+- Attach error logs
 
-## 🚀 Развертывание
+## 🚀 Deployment
 
 ### Production:
 ```bash
@@ -179,4 +179,4 @@ npm run build
 
 ---
 
-**DIMA** - современная система управления недвижимостью для застройщиков и покупателей! 🏠✨
+**DIMA** - a modern real estate management system for developers and buyers! 🏠✨
